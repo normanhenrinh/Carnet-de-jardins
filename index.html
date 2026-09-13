@@ -466,7 +466,7 @@
 (function(){
 "use strict";
 
-const APP_VERSION = "2026-09-13-1";
+const APP_VERSION = "2026-09-13-2";
 
 /* ---------------- utilities ---------------- */
 const $  = (s,r=document)=>r.querySelector(s);
@@ -721,11 +721,13 @@ const LocalDB = (function(){
       return id;
     },
     async updateClient(id, patch){
+      if(!id) throw new Error('Fiche client invalide (identifiant manquant) — supprimez cette fiche et recréez-la.');
       const rec = await tx('clients','readwrite', async s=>{ const cur = await reqp(s.get(id)); const merged={...(cur||{id}), ...patch}; await reqp(s.put(merged)); return merged; });
       CloudSync.push('clients', id, rec);
       return rec;
     },
     async deleteClient(id){
+      if(!id) throw new Error('Fiche client invalide (identifiant manquant).');
       await tx(['clients','visits','photos'],'readwrite', async (cs,vs,ps)=>{
         await reqp(cs.delete(id));
         const visits = await reqp(vs.index('clientId').getAll(id));
@@ -764,6 +766,24 @@ const LocalDB = (function(){
       return rec;
     },
     async deleteEquipment(id){ await tx('equipment','readwrite', s=>reqp(s.delete(id))); CloudSync.pushDelete('equipment', id); },
+    async repairOrphans(){
+      // Nettoie les fiches corrompues (sans identifiant valide) laissées par d'anciennes versions.
+      return tx(['clients','visits','equipment'],'readwrite', async (...stores)=>{
+        for(const store of stores){
+          await new Promise((resolve,reject)=>{
+            const req = store.openCursor();
+            req.onsuccess = ()=>{
+              const cursor = req.result;
+              if(!cursor){ resolve(); return; }
+              const val = cursor.value;
+              if(!val || !val.id){ cursor.delete(); }
+              cursor.continue();
+            };
+            req.onerror = ()=>reject(req.error);
+          });
+        }
+      });
+    },
     async exportAll(){
       const list = await this.getAllClients();
       const full = [];
@@ -827,6 +847,7 @@ async function init(){
   let mapOk = true;
   try{ initMap(); }catch(e){ mapOk = false; showMapUnavailable(); }
   try{
+    await LocalDB.repairOrphans().catch(err=>console.error('repairOrphans failed', err));
     await reloadClients();
   }catch(e){
     $('#mapView').classList.remove('active');
