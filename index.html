@@ -16,6 +16,9 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <style>
   :root{
     --bg:#F2F4EA;
@@ -74,7 +77,7 @@
   :focus-visible{outline:2.5px solid var(--clay);outline-offset:2px;border-radius:4px;}
   ::selection{background:var(--moss-light);}
   @media (prefers-reduced-motion: reduce){ *{animation-duration:.001ms !important;transition-duration:.001ms !important;} }
- 
+
   /* ---------- topbar ---------- */
   .topbar{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--surface);border-bottom:1px solid var(--line);position:relative;z-index:20;flex:none;}
   .brand{display:flex;align-items:center;gap:8px;font-family:var(--font-d);font-weight:600;font-size:1.05rem;color:var(--moss-dark);white-space:nowrap;}
@@ -92,17 +95,17 @@
   .iconBtn{border:none;background:var(--surface-2);color:var(--ink);width:36px;height:36px;border-radius:999px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
   .iconBtn:hover{background:var(--line);}
   .iconBtn svg{width:18px;height:18px;}
- 
+
   .menuPanel{position:absolute;top:58px;right:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);box-shadow:var(--shadow);padding:6px;min-width:250px;z-index:30;}
   .menuPanel button{display:flex;width:100%;align-items:center;gap:10px;padding:10px 10px;border:none;background:none;border-radius:var(--r-s);color:var(--ink);font-size:.88rem;cursor:pointer;text-align:left;}
   .menuPanel button:hover{background:var(--surface-2);}
   .menuNote{padding:10px 12px 6px;font-size:.76rem;color:var(--ink-dim);line-height:1.4;border-top:1px solid var(--line);margin-top:4px;}
- 
+
   /* ---------- main / views ---------- */
   main{flex:1;position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:0;}
   .view{position:absolute;inset:0;display:none;flex-direction:column;}
   .view.active{display:flex;}
- 
+
   /* MAP */
   #mapViewport{flex:1;position:relative;overflow:hidden;background:var(--bg);cursor:grab;}
   #mapViewport.placing{cursor:crosshair;}
@@ -117,39 +120,39 @@
   .leafletPin.soon .dot{background:var(--sky);}
   .leafletPin.sub .dot{box-shadow:0 0 0 2px var(--gold), var(--shadow-sm);}
   .mePinDot{width:16px;height:16px;border-radius:50%;background:#3E7BC4;border:2px solid var(--surface);box-shadow:var(--shadow-sm);}
- 
+
   .leaflet-control-zoom a{background:var(--surface) !important;color:var(--ink) !important;border-color:var(--line) !important;}
   .leaflet-control-zoom a:hover{background:var(--surface-2) !important;}
   .leaflet-control-scale-line{background:rgba(255,255,255,.8) !important;border-color:var(--ink-dim) !important;color:var(--ink) !important;font-family:var(--font-m) !important;}
   .leaflet-popup-content-wrapper{border-radius:var(--r-m) !important;}
   .leaflet-bar, .leaflet-control-zoom{box-shadow:var(--shadow-sm) !important;border:none !important;}
- 
+
   .mapOverlayTop{position:absolute;top:12px;left:56px;right:12px;display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;pointer-events:none;z-index:600;}
   .mapOverlayTop>*{pointer-events:auto;}
   .chip{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm);border-radius:999px;padding:7px 12px;font-size:.78rem;font-weight:600;display:flex;align-items:center;gap:6px;color:var(--ink-dim);}
   .chip.warnChip{background:var(--clay-light);color:var(--clay);border-color:transparent;cursor:pointer;}
   .placingBanner{background:var(--moss-dark);color:#fff;border-radius:var(--r-m);padding:10px 14px;font-size:.85rem;font-weight:600;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;width:100%;}
   .placingBanner button{margin-left:auto;background:rgba(255,255,255,.18);border:none;color:#fff;border-radius:999px;padding:5px 11px;font-size:.78rem;font-weight:600;cursor:pointer;}
- 
+
   .mapControls{position:absolute;right:12px;bottom:36px;display:flex;flex-direction:column;gap:8px;z-index:600;}
   .mapBtn{width:42px;height:42px;border-radius:999px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink);}
   .mapBtn svg{width:19px;height:19px;}
- 
+
   .legend{position:absolute;left:12px;bottom:36px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);box-shadow:var(--shadow-sm);padding:9px 11px;font-size:.72rem;color:var(--ink-dim);display:flex;flex-direction:column;gap:4px;z-index:600;}
   .legend .row{display:flex;align-items:center;gap:6px;}
   .legend .sw{width:9px;height:9px;border-radius:50%;flex:none;}
- 
+
   .fab{position:fixed;right:18px;bottom:calc(24px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:999px;background:var(--clay);color:#fff;border:none;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:700;}
   .fab svg{width:24px;height:24px;}
   .fab:hover{filter:brightness(.95);}
- 
+
   .emptyState{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:14px;background:var(--bg);z-index:2;pointer-events:none;}
   .emptyState.overMap{background:transparent;}
   .emptyState>*{pointer-events:auto;}
   .emptyState svg{width:52px;height:52px;color:var(--moss);}
   .emptyState h2{font-size:1.3rem;color:var(--ink);}
   .emptyState p{margin:0;color:var(--ink-dim);font-size:.9rem;max-width:280px;line-height:1.5;background:var(--surface);padding:2px 10px;border-radius:var(--r-s);}
- 
+
   /* LIST */
   .searchBar{padding:10px 14px;background:var(--surface);border-bottom:1px solid var(--line);display:flex;gap:8px;}
   .searchBar .searchField{flex:1;display:flex;align-items:center;gap:8px;background:var(--surface-2);border-radius:999px;padding:8px 13px;}
@@ -245,7 +248,7 @@
   .badge.alert{background:var(--clay-light);color:var(--clay);}
   .badge.none{background:var(--surface-2);color:var(--ink-dim);}
   .badge.soon{background:var(--sky-light);color:var(--sky);}
- 
+
   /* ---------- sheet / modal ---------- */
   .backdrop{position:fixed;inset:0;background:rgba(18,24,20,.45);z-index:1000;display:flex;align-items:flex-end;justify-content:center;}
   @media (min-width:640px){ .backdrop{align-items:center;} }
@@ -255,13 +258,13 @@
   .sheetHead h2{font-size:1.3rem;flex:1;min-width:0;}
   .sheetHead .headBtns{display:flex;gap:6px;flex:none;}
   .sheetBody{overflow-y:auto;padding:14px 16px calc(20px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:16px;}
- 
+
   .section{display:flex;flex-direction:column;gap:8px;}
   .sectionTitle{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);}
   .contactRow{display:flex;gap:8px;flex-wrap:wrap;}
   .pillLink{display:flex;align-items:center;gap:6px;background:var(--surface-2);border-radius:999px;padding:7px 12px;font-size:.83rem;color:var(--ink);text-decoration:none;font-weight:600;}
   .pillLink svg{width:14px;height:14px;color:var(--moss-dark);}
- 
+
   .infoCard{background:var(--surface-2);border-radius:var(--r-m);padding:12px 13px;font-size:.86rem;color:var(--ink);line-height:1.55;}
   .infoCard .muted{color:var(--ink-dim);}
   .posRow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
@@ -269,13 +272,13 @@
   .smallBtn:hover{border-color:var(--moss);}
   .smallBtn svg{width:13px;height:13px;}
   .coord{font-family:var(--font-m);font-size:.74rem;color:var(--ink-dim);}
- 
+
   .photoRow{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;}
   .photoThumb{width:84px;height:84px;border-radius:var(--r-s);object-fit:cover;flex:none;background:var(--surface-2);cursor:pointer;}
   .addPhotoTile{width:84px;height:84px;border-radius:var(--r-s);border:1.5px dashed var(--line);color:var(--ink-dim);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex:none;background:none;cursor:pointer;font-size:.68rem;font-weight:600;}
   .addPhotoTile svg{width:18px;height:18px;}
   .addPhotoTile:hover{border-color:var(--moss);color:var(--moss-dark);}
- 
+
   .visitItem{border-left:2px solid var(--moss-light);padding:2px 0 2px 13px;position:relative;}
   .visitItem::before{content:"";position:absolute;left:-4.5px;top:6px;width:8px;height:8px;border-radius:50%;background:var(--moss);}
   .visitItem .vDate{font-weight:700;font-size:.83rem;color:var(--ink);font-family:var(--font-d);}
@@ -288,14 +291,14 @@
   .lastVisitBanner strong{color:var(--ink);}
   .lastVisitBanner.soonText{color:var(--sky);}
   .lastVisitBanner.soonText strong{color:var(--sky);}
- 
+
   .btnRow{display:flex;gap:8px;flex-wrap:wrap;}
   .btnPrimary{background:var(--moss);color:#fff;border:none;border-radius:999px;padding:9px 16px;font-size:.85rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
   .btnPrimary:hover{background:var(--moss-dark);}
   .btnPrimary svg{width:14px;height:14px;}
   .btnGhost{background:none;border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:9px 16px;font-size:.85rem;font-weight:600;cursor:pointer;}
   .btnDanger{background:none;border:1px solid var(--danger);color:var(--danger);border-radius:999px;padding:9px 16px;font-size:.85rem;font-weight:600;cursor:pointer;}
- 
+
   /* ---------- forms ---------- */
   .formGrid{display:flex;flex-direction:column;gap:12px;}
   .field{display:flex;flex-direction:column;gap:5px;}
@@ -311,22 +314,48 @@
   .posStatus{font-size:.78rem;color:var(--moss-dark);background:var(--moss-light);border-radius:var(--r-s);padding:8px 10px;display:none;align-items:center;gap:6px;}
   .posStatus.show{display:flex;}
   .posStatus svg{width:14px;height:14px;flex:none;}
- 
+
   /* lightbox */
   .lightbox{position:fixed;inset:0;background:rgba(10,14,11,.9);z-index:1100;display:flex;align-items:center;justify-content:center;padding:24px;}
   .lightbox img{max-width:100%;max-height:100%;border-radius:var(--r-s);}
   .lightbox button{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.15);border:none;color:#fff;width:38px;height:38px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
- 
+
   /* toast */
   #toastWrap{position:fixed;left:0;right:0;bottom:calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:8px;z-index:1200;pointer-events:none;}
   .toast{background:var(--ink);color:var(--bg);font-size:.83rem;font-weight:600;padding:10px 16px;border-radius:999px;box-shadow:var(--shadow);max-width:88vw;text-align:center;}
   :root:not([data-theme="light"]) .toast{background:var(--surface-2);color:var(--ink);border:1px solid var(--line);}
   :root[data-theme="dark"] .toast{background:var(--surface-2);color:var(--ink);border:1px solid var(--line);}
- 
+
   .fallback{position:absolute;inset:0;z-index:10;display:none;align-items:center;justify-content:center;padding:30px;text-align:center;color:var(--ink-dim);font-size:.9rem;background:var(--bg);}
+
+  #authGate{position:fixed;inset:0;z-index:2000;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;}
+  .authCard{width:100%;max-width:360px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;}
+  .authCard svg{color:var(--moss);margin-bottom:4px;}
+  .authCard h1{font-family:var(--font-d);font-size:1.4rem;margin:0;color:var(--ink);}
+  .authSub{color:var(--ink-dim);font-size:.85rem;margin:0 0 14px;}
+  .authCard form{width:100%;text-align:left;}
+  .authError{background:var(--clay-light);color:var(--clay);font-size:.82rem;border-radius:var(--r-s);padding:8px 11px;}
+  .authNote{color:var(--ink-dim);font-size:.74rem;line-height:1.5;margin-top:16px;}
 </style>
 </head>
 <body>
+<div id="authGate" style="display:none">
+  <div class="authCard">
+    <svg viewBox="0 0 24 24" fill="none" width="30" height="30"><path d="M12 21c0-6 4-9 8-10-1 6-3 10-8 10Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 21c0-8-4-12-9-13 0 7 3 13 9 13Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 21V9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <h1>Carnet de Jardins</h1>
+    <p class="authSub">Connectez-vous pour synchroniser vos données entre vos appareils.</p>
+    <form id="authForm" class="formGrid">
+      <div class="field"><label for="auth_email">Email</label><input id="auth_email" type="email" required autocomplete="username" placeholder="vous@exemple.fr"></div>
+      <div class="field"><label for="auth_pw">Mot de passe</label><input id="auth_pw" type="password" required autocomplete="current-password" minlength="6" placeholder="6 caractères minimum"></div>
+      <div class="authError" id="authError" style="display:none"></div>
+      <div class="btnRow" style="margin-top:6px;">
+        <button type="submit" class="btnPrimary" id="authSignInBtn">Se connecter</button>
+        <button type="button" class="btnGhost" id="authSignUpBtn">Créer un compte</button>
+      </div>
+    </form>
+    <p class="authNote">Le premier appareil que vous connectez crée le compte ; connectez-vous avec le même email et le même mot de passe sur vos autres appareils pour partager les mêmes données. Les photos restent stockées uniquement sur l'appareil qui les a prises.</p>
+  </div>
+</div>
 <div id="app">
   <header class="topbar">
     <div class="brand">
@@ -359,7 +388,7 @@
       <svg viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/></svg>
     </button>
   </header>
- 
+
   <main id="main">
     <section class="view active" id="mapView">
       <div id="mapViewport">
@@ -383,7 +412,7 @@
         </button>
       </div>
     </section>
- 
+
     <section class="view" id="listView">
       <div class="searchBar">
         <div class="searchField">
@@ -398,7 +427,7 @@
       </div>
       <div class="listWrap" id="listWrap"></div>
     </section>
- 
+
     <section class="view" id="planningView">
       <div class="planLegend">
         <span><span class="sw" style="background:var(--gold-light);border:2px solid var(--gold);"></span>Abonnement mensuel</span>
@@ -407,16 +436,16 @@
       <div class="acctToolbar" id="planToolbar"></div>
       <div class="planWrap" id="planWrap"></div>
     </section>
- 
+
     <section class="view" id="comptaView">
       <div class="acctToolbar" id="acctToolbar"></div>
       <div class="acctBody" id="acctBody"></div>
     </section>
- 
+
     <section class="view" id="materielView">
       <div class="listWrap" id="equipWrap"></div>
     </section>
- 
+
     <div class="fallback" id="fallback" style="display:none">
       <div>
         <p style="margin:0 0 10px;">Votre navigateur ne permet pas d'enregistrer les données de cette application (mode navigation privée, ou navigateur trop ancien).</p>
@@ -424,26 +453,28 @@
       </div>
     </div>
   </main>
- 
+
   <button class="fab" id="fabAdd" type="button" aria-label="Ajouter un client">
     <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
   </button>
 </div>
- 
+
 <div id="toastWrap"></div>
 <div id="modalRoot"></div>
- 
+
 <script>
 (function(){
 "use strict";
- 
+
+const APP_VERSION = "2026-09-13-1";
+
 /* ---------------- utilities ---------------- */
 const $  = (s,r=document)=>r.querySelector(s);
 const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
 const esc = s => (s==null?'':String(s)).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clamp = (v,a,b)=>Math.min(b,Math.max(a,v));
 const uid = ()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36);
- 
+
 function toast(msg){
   const wrap = $('#toastWrap');
   const el = document.createElement('div');
@@ -451,7 +482,7 @@ function toast(msg){
   wrap.appendChild(el);
   setTimeout(()=>{ el.style.transition='opacity .4s'; el.style.opacity='0'; setTimeout(()=>el.remove(),400); }, 2600);
 }
- 
+
 const MOIS = ['jan.','fév.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
 const MOIS_LONG = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 function fmtDate(ts){
@@ -482,7 +513,7 @@ function weekLabel(start,end){
   if(start.getMonth()===end.getMonth()) return `${start.getDate()} – ${end.getDate()} ${MOIS[start.getMonth()]} ${end.getFullYear()}`;
   return `${start.getDate()} ${MOIS[start.getMonth()]} – ${end.getDate()} ${MOIS[end.getMonth()]} ${end.getFullYear()}`;
 }
- 
+
 function recency(lastVisitAt){
   if(!lastVisitAt) return 'none';
   const n = daysAgo(lastVisitAt);
@@ -507,7 +538,7 @@ function statusLabel(c){
   }
   return c.lastVisitAt ? RECENCY_LABEL[recency(c.lastVisitAt)]+' · '+relDays(c.lastVisitAt) : 'Jamais visité';
 }
- 
+
 function haversine(lat1,lng1,lat2,lng2){
   const R=6371000, toRad=d=>d*Math.PI/180;
   const dLat=toRad(lat2-lat1), dLng=toRad(lng2-lng1);
@@ -542,7 +573,7 @@ async function geocodeAddress(query){
   if(!data.length) return null;
   return {lat:parseFloat(data[0].lat), lng:parseFloat(data[0].lon), label:data[0].display_name};
 }
- 
+
 function icon(name){
   const I = {
     phone:'<path d="M6.6 10.5c1.3 2.6 3.4 4.7 6 6l2-2c.3-.3.7-.4 1-.3 1.1.4 2.3.6 3.5.6.6 0 1 .4 1 1v3.4c0 .6-.4 1-1 1C10.8 20.2 3.8 13.2 3.8 5c0-.6.4-1 1-1H8c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.3 0 .7-.3 1l-2 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>',
@@ -567,8 +598,81 @@ function icon(name){
   };
   return `<svg viewBox="0 0 24 24" fill="none">${I[name]||''}</svg>`;
 }
- 
+
 /* ---------------- local storage (IndexedDB) ---------------- */
+/* ---------------- cloud sync (Firebase) ----------------
+   Pour activer la synchronisation entre appareils : créez un projet Firebase gratuit,
+   activez Firestore et l'authentification Email/Mot de passe, puis collez ici la
+   configuration fournie par Firebase (Paramètres du projet > Vos applications > Config).
+   Tant que apiKey vaut "COLLEZ_ICI", l'application fonctionne normalement en local uniquement. */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBOddUyUi_pkSOy-zuDoTlULLkYgAqjPF0",
+  authDomain: "carnet-de-jardins.firebaseapp.com",
+  projectId: "carnet-de-jardins",
+  storageBucket: "carnet-de-jardins.firebasestorage.app",
+  messagingSenderId: "259379680004",
+  appId: "1:259379680004:web:704bdf04a97c55910a3651"
+};
+const CloudSync = (function(){
+  const configured = !!(FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey !== 'COLLEZ_ICI');
+  let auth=null, db=null, currentUid=null, ready=false, unsubs=[];
+
+  function isConfigured(){ return configured; }
+  function isReady(){ return ready; }
+
+  function initFirebase(){
+    if(!configured) return;
+    firebase.initializeApp(FIREBASE_CONFIG);
+    auth = firebase.auth();
+    db = firebase.firestore();
+    try{ db.enablePersistence({synchronizeTabs:true}).catch(()=>{}); }catch(e){}
+  }
+  function onAuthChange(cb){ auth.onAuthStateChanged(cb); }
+  function signUp(email,pw){ return auth.createUserWithEmailAndPassword(email,pw); }
+  function signIn(email,pw){ return auth.signInWithEmailAndPassword(email,pw); }
+  function signOutUser(){ stopSync(); return auth.signOut(); }
+  function col(name){ return db.collection('users').doc(currentUid).collection(name); }
+
+  async function startSync(userId, handlers){
+    currentUid = userId;
+    ready = true;
+    for(const name of Object.keys(handlers)){
+      const unsub = col(name).onSnapshot(snap=>{
+        snap.docChanges().forEach(change=>{ handlers[name](change.type, change.doc.data()); });
+      }, err=>console.error('sync error', name, err));
+      unsubs.push(unsub);
+    }
+    await bootstrapIfEmpty();
+  }
+  function stopSync(){ unsubs.forEach(u=>u()); unsubs=[]; ready=false; currentUid=null; }
+
+  async function bootstrapIfEmpty(){
+    const flagKey = 'cdjCloudBootstrapped_'+currentUid;
+    if(localStorage.getItem(flagKey)) return;
+    try{
+      const snap = await col('clients').limit(1).get();
+      if(snap.empty){
+        const localClients = await LocalDB.getAllClients();
+        for(const c of localClients) await push('clients', c.id, c);
+        const localVisits = await LocalDB.getAllVisits();
+        for(const v of localVisits) await push('visits', v.id, v);
+        const localEquip = await LocalDB.getAllEquipment();
+        for(const e of localEquip) await push('equipment', e.id, e);
+      }
+      localStorage.setItem(flagKey, '1');
+    }catch(e){ console.error('bootstrap failed', e); }
+  }
+  function push(name, id, data){
+    if(!ready) return Promise.resolve();
+    return col(name).doc(id).set({...data, id}).catch(err=>console.error('push failed',name,id,err));
+  }
+  function pushDelete(name, id){
+    if(!ready) return Promise.resolve();
+    return col(name).doc(id).delete().catch(err=>console.error('push delete failed',name,id,err));
+  }
+  return { isConfigured, isReady, initFirebase, onAuthChange, signUp, signIn, signOutUser, startSync, stopSync, push, pushDelete };
+})();
+
 const LocalDB = (function(){
   let dbp = null;
   function open(){
@@ -610,28 +714,56 @@ const LocalDB = (function(){
   }
   return {
     async getAllClients(){ return tx('clients','readonly', s=>reqp(s.getAll())); },
-    async addClient(data){ const id=uid(); await tx('clients','readwrite', s=>reqp(s.add({id, ...data}))); return id; },
-    async updateClient(id, patch){ return tx('clients','readwrite', async s=>{ const cur = await reqp(s.get(id)); return reqp(s.put({...(cur||{id}), ...patch})); }); },
+    async addClient(data){
+      const id=uid(); const rec={id, ...data};
+      await tx('clients','readwrite', s=>reqp(s.add(rec)));
+      CloudSync.push('clients', id, rec);
+      return id;
+    },
+    async updateClient(id, patch){
+      const rec = await tx('clients','readwrite', async s=>{ const cur = await reqp(s.get(id)); const merged={...(cur||{id}), ...patch}; await reqp(s.put(merged)); return merged; });
+      CloudSync.push('clients', id, rec);
+      return rec;
+    },
     async deleteClient(id){
-      return tx(['clients','visits','photos'],'readwrite', async (cs,vs,ps)=>{
+      await tx(['clients','visits','photos'],'readwrite', async (cs,vs,ps)=>{
         await reqp(cs.delete(id));
         const visits = await reqp(vs.index('clientId').getAll(id));
-        for(const v of visits) await reqp(vs.delete(v.id));
+        for(const v of visits){ await reqp(vs.delete(v.id)); CloudSync.pushDelete('visits', v.id); }
         const photos = await reqp(ps.index('clientId').getAll(id));
         for(const p of photos) await reqp(ps.delete(p.id));
       });
+      CloudSync.pushDelete('clients', id);
     },
     async getVisits(clientId){ return tx('visits','readonly', s=>reqp(s.index('clientId').getAll(clientId))); },
     async getAllVisits(){ return tx('visits','readonly', s=>reqp(s.getAll())); },
-    async addVisit(clientId, data){ const id=uid(); await tx('visits','readwrite', s=>reqp(s.add({id, clientId, ...data}))); return id; },
-    async updateVisit(visitId, patch){ return tx('visits','readwrite', async s=>{ const cur=await reqp(s.get(visitId)); if(!cur) return; return reqp(s.put({...cur, ...patch})); }); },
-    async deleteVisit(clientId, visitId){ return tx('visits','readwrite', s=>reqp(s.delete(visitId))); },
+    async addVisit(clientId, data){
+      const id=uid(); const rec={id, clientId, ...data};
+      await tx('visits','readwrite', s=>reqp(s.add(rec)));
+      CloudSync.push('visits', id, rec);
+      return id;
+    },
+    async updateVisit(visitId, patch){
+      const rec = await tx('visits','readwrite', async s=>{ const cur=await reqp(s.get(visitId)); if(!cur) return null; const merged={...cur, ...patch}; await reqp(s.put(merged)); return merged; });
+      if(rec) CloudSync.push('visits', visitId, rec);
+      return rec;
+    },
+    async deleteVisit(clientId, visitId){ await tx('visits','readwrite', s=>reqp(s.delete(visitId))); CloudSync.pushDelete('visits', visitId); },
     async getPhotos(clientId){ return tx('photos','readonly', s=>reqp(s.index('clientId').getAll(clientId))); },
     async addPhoto(clientId, dataUrl){ const id=uid(); await tx('photos','readwrite', s=>reqp(s.add({id, clientId, dataUrl, takenAt:Date.now()}))); return id; },
     async getAllEquipment(){ return tx('equipment','readonly', s=>reqp(s.getAll())); },
-    async addEquipment(data){ const id=uid(); await tx('equipment','readwrite', s=>reqp(s.add({id, ...data}))); return id; },
-    async updateEquipment(id, patch){ return tx('equipment','readwrite', async s=>{ const cur=await reqp(s.get(id)); if(!cur) return; return reqp(s.put({...cur, ...patch})); }); },
-    async deleteEquipment(id){ return tx('equipment','readwrite', s=>reqp(s.delete(id))); },
+    async addEquipment(data){
+      const id=uid(); const rec={id, ...data};
+      await tx('equipment','readwrite', s=>reqp(s.add(rec)));
+      CloudSync.push('equipment', id, rec);
+      return id;
+    },
+    async updateEquipment(id, patch){
+      const rec = await tx('equipment','readwrite', async s=>{ const cur=await reqp(s.get(id)); if(!cur) return null; const merged={...cur, ...patch}; await reqp(s.put(merged)); return merged; });
+      if(rec) CloudSync.push('equipment', id, rec);
+      return rec;
+    },
+    async deleteEquipment(id){ await tx('equipment','readwrite', s=>reqp(s.delete(id))); CloudSync.pushDelete('equipment', id); },
     async exportAll(){
       const list = await this.getAllClients();
       const full = [];
@@ -651,10 +783,14 @@ const LocalDB = (function(){
         for(const p of (payload.photos||[])) await reqp(ps.put(p));
         for(const e of (payload.equipment||[])) await reqp(es.put(e));
       });
-    }
+    },
+    // Low-level helpers used only to mirror a change that came FROM the cloud into the
+    // local database, without re-pushing it back up to the cloud.
+    async _rawPut(store, data){ return tx(store,'readwrite', s=>reqp(s.put(data))); },
+    async _rawDelete(store, id){ return tx(store,'readwrite', s=>reqp(s.delete(id))); },
   };
 })();
- 
+
 /* ---------------- state ---------------- */
 let clients = new Map();
 let currentView='map';
@@ -670,7 +806,7 @@ let listFilter='all';
 let equipmentCache=[];
 let planViewMode='week';
 let planWeekAnchor=new Date();
- 
+
 async function reloadClients(){
   const list = await LocalDB.getAllClients();
   clients.clear();
@@ -680,9 +816,12 @@ async function reloadVisitsAndPhotos(id){
   currentVisits = (await LocalDB.getVisits(id)).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   currentPhotos = (await LocalDB.getPhotos(id)).sort((a,b)=>(b.takenAt||0)-(a.takenAt||0));
 }
- 
+
 /* ---------------- init ---------------- */
+let appStarted = false;
 async function init(){
+  if(appStarted) return;
+  appStarted = true;
   bindTopbar();
   bindFab();
   let mapOk = true;
@@ -706,8 +845,114 @@ function showMapUnavailable(){
     </div>
   </div>`;
 }
-window.addEventListener('DOMContentLoaded', ()=>{ init(); });
- 
+
+/* ---------------- sync with the rest of the UI once a remote change lands ---------------- */
+let refreshQueued = false;
+function refreshAfterRemoteChange(){
+  if(!appStarted || refreshQueued) return;
+  refreshQueued = true;
+  requestAnimationFrame(async ()=>{
+    refreshQueued = false;
+    await reloadClients();
+    renderMarkers();
+    if(currentView==='list') renderList();
+    if(currentView==='planning') renderPlanning();
+    if(currentView==='compta') renderCompta();
+    if(currentView==='materiel') renderEquipment();
+    if(openClientId){ await reloadVisitsAndPhotos(openClientId); renderSheetContent(); }
+    refreshEmptyState();
+  });
+}
+const REMOTE_STORE_OF = {clients:'clients', visits:'visits', equipment:'equipment'};
+function makeRemoteHandler(name){
+  const store = REMOTE_STORE_OF[name];
+  return async (type, data)=>{
+    try{
+      if(type==='removed'){
+        await LocalDB._rawDelete(store, data.id);
+      } else {
+        await LocalDB._rawPut(store, data);
+      }
+      refreshAfterRemoteChange();
+    }catch(e){ console.error('remote handler failed', name, e); }
+  };
+}
+
+/* ---------------- auth gate ---------------- */
+function showAuthGate(){ $('#authGate').style.display='flex'; }
+function hideAuthGate(){ $('#authGate').style.display='none'; }
+function authSetError(msg){
+  const el = $('#authError');
+  if(!msg){ el.style.display='none'; el.textContent=''; return; }
+  el.textContent = msg;
+  el.style.display='block';
+}
+function authErrorMessage(err){
+  const code = err && err.code || '';
+  if(code.includes('wrong-password') || code.includes('invalid-credential')) return 'Email ou mot de passe incorrect.';
+  if(code.includes('user-not-found')) return "Aucun compte avec cet email — essayez « Créer un compte ».";
+  if(code.includes('email-already-in-use')) return 'Un compte existe déjà avec cet email — connectez-vous plutôt.';
+  if(code.includes('weak-password')) return 'Mot de passe trop court (6 caractères minimum).';
+  if(code.includes('invalid-email')) return 'Adresse email invalide.';
+  if(code.includes('network-request-failed')) return 'Connexion internet impossible.';
+  return "Échec de la connexion : "+(err&&err.message?err.message:err);
+}
+function bindAuthGate(){
+  const form = $('#authForm');
+  form.addEventListener('submit', async e=>{
+    e.preventDefault();
+    authSetError(null);
+    const email = $('#auth_email').value.trim();
+    const pw = $('#auth_pw').value;
+    try{ await CloudSync.signIn(email, pw); }
+    catch(err){ authSetError(authErrorMessage(err)); }
+  });
+  $('#authSignUpBtn').addEventListener('click', async ()=>{
+    authSetError(null);
+    const email = $('#auth_email').value.trim();
+    const pw = $('#auth_pw').value;
+    if(!email || pw.length<6){ authSetError('Renseignez un email et un mot de passe de 6 caractères minimum.'); return; }
+    try{ await CloudSync.signUp(email, pw); }
+    catch(err){ authSetError(authErrorMessage(err)); }
+  });
+}
+
+async function boot(){
+  if(!CloudSync.isConfigured()){
+    init();
+    return;
+  }
+  try{
+    bindAuthGate();
+    CloudSync.initFirebase();
+    CloudSync.onAuthChange(async user=>{
+      try{
+        if(user){
+          hideAuthGate();
+          await CloudSync.startSync(user.uid, {
+            clients: makeRemoteHandler('clients'),
+            visits: makeRemoteHandler('visits'),
+            equipment: makeRemoteHandler('equipment'),
+          });
+          init();
+          refreshAfterRemoteChange();
+        } else {
+          showAuthGate();
+        }
+      }catch(err){
+        console.error('cloud sync failed, continuing locally', err);
+        hideAuthGate();
+        init();
+      }
+    });
+  }catch(err){
+    console.error('firebase unavailable, continuing locally', err);
+    hideAuthGate();
+    init();
+  }
+}
+window.addEventListener('DOMContentLoaded', ()=>{ boot(); });
+
 /* ---------------- topbar ---------------- */
 function bindTopbar(){
   $$('.toggleBtn').forEach(b=>b.addEventListener('click', ()=>switchView(b.dataset.view)));
@@ -738,18 +983,25 @@ function switchView(v){
 function toggleMenu(){
   const existing=$('.menuPanel'); if(existing){ existing.remove(); return; }
   const p=document.createElement('div'); p.className='menuPanel';
+  const syncOn = CloudSync.isConfigured();
   p.innerHTML=`
     <button id="exportBtn">${icon('download')} Exporter mes données</button>
     <button id="importBtn">${icon('upload')} Importer une sauvegarde</button>
     <input type="file" accept="application/json" id="importInput" style="display:none">
-    <div class="menuNote">Vos données (clients, photos, historique) sont stockées uniquement sur cet appareil, dans ce navigateur — pas de synchronisation avec vos autres appareils. Exportez une sauvegarde de temps en temps pour ne rien perdre.</div>`;
+    ${syncOn ? `<button id="signOutBtn">${icon('close')} Se déconnecter</button>` : ''}
+    <div class="menuNote">${syncOn
+      ? 'Vos clients, rendez-vous et matériel sont synchronisés entre vos appareils connectés au même compte. Les photos, elles, restent uniquement sur l\'appareil qui les a prises.'
+      : 'Vos données (clients, photos, historique) sont stockées uniquement sur cet appareil, dans ce navigateur — pas de synchronisation avec vos autres appareils. Exportez une sauvegarde de temps en temps pour ne rien perdre.'}</div>
+    <div class="menuNote" style="opacity:.55;margin-top:2px;">Version ${APP_VERSION} · Synchronisation ${syncOn?'activée':'désactivée'}</div>`;
   document.body.appendChild(p);
   p.addEventListener('click', e=>e.stopPropagation());
   $('#exportBtn').addEventListener('click', exportData);
   $('#importBtn').addEventListener('click', ()=>$('#importInput').click());
   $('#importInput').addEventListener('change', e=>{ importData(e.target.files[0]); $('.menuPanel')?.remove(); });
+  const signOutBtn = $('#signOutBtn');
+  if(signOutBtn) signOutBtn.addEventListener('click', async ()=>{ $('.menuPanel')?.remove(); await CloudSync.signOutUser(); location.reload(); });
 }
- 
+
 /* ---------------- map ---------------- */
 function initMap(){
   map = L.map('leafletMap', {zoomControl:false, attributionControl:false, worldCopyJump:true}).setView([46.6,2.4], 6);
@@ -837,7 +1089,7 @@ function refreshEmptyState(){
   if(clients.size){ hideEmptyState(); return; }
   showEmptyState();
 }
- 
+
 /* ---------------- list ---------------- */
 function renderList(){
   const wrap = $('#listWrap');
@@ -847,7 +1099,7 @@ function renderList(){
   if(listFilter==='sub') items = items.filter(c=>c.tariffType==='mensuel');
   if(listFilter==='nosub') items = items.filter(c=>c.tariffType!=='mensuel');
   items.sort((a,b)=>(a.name||'').localeCompare(b.name||'','fr'));
- 
+
   if(!clients.size){ wrap.innerHTML=''; refreshEmptyState(); return; }
   hideEmptyState();
   if(!items.length){
@@ -855,7 +1107,7 @@ function renderList(){
     wrap.innerHTML = `<div style="text-align:center;color:var(--ink-dim);padding:30px 10px;font-size:.88rem;">${msg}</div>`;
     return;
   }
- 
+
   wrap.innerHTML = items.map(c=>{
     const rec = statusClass(c);
     const initials = (c.name||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
@@ -877,7 +1129,7 @@ function renderList(){
   });
   $$('.gmapsBtn', wrap).forEach(a=>a.addEventListener('click', e=>e.stopPropagation()));
 }
- 
+
 /* ---------------- planning ---------------- */
 const PLAN_START_HOUR = 7, PLAN_END_HOUR = 20, PLAN_SLOT_MIN = 30, PLAN_ROW_H = 28;
 function renderPlanning(){
@@ -911,12 +1163,12 @@ function renderPlanningWeek(){
   days.forEach(d=>byDay[isoDateLocal(d)]=[]);
   [...clients.values()].filter(c=>c.nextVisitAt && byDay[c.nextVisitAt]).forEach(c=>byDay[c.nextVisitAt].push(c));
   Object.values(byDay).forEach(list=>list.sort((a,b)=>(a.nextVisitTime||'').localeCompare(b.nextVisitTime||'')));
- 
+
   const slotsPerHour = 60/PLAN_SLOT_MIN;
   const slotCount = (PLAN_END_HOUR-PLAN_START_HOUR)*slotsPerHour;
   const slots = Array.from({length:slotCount}, (_,i)=>i);
   const gridHeight = slotCount*PLAN_ROW_H;
- 
+
   const dayHeaders = days.map(d=>{
     const isToday = isoDateLocal(d)===todayStr;
     return `<div class="planDayHead${isToday?' today':''}">
@@ -924,7 +1176,7 @@ function renderPlanningWeek(){
       <div class="planDayNum">${d.getDate()}</div>
     </div>`;
   }).join('');
- 
+
   const timeGutter = slots.map(i=>{
     const onHour = (i%slotsPerHour)===0;
     const hh = PLAN_START_HOUR + Math.floor(i/slotsPerHour);
@@ -932,7 +1184,7 @@ function renderPlanningWeek(){
     const label = onHour ? `${String(hh).padStart(2,'0')}:00` : `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
     return `<div class="planHourLabel${onHour?' onHour':''}" style="height:${PLAN_ROW_H}px;">${label}</div>`;
   }).join('');
- 
+
   const dayColumns = days.map(d=>{
     const iso = isoDateLocal(d);
     const isToday = iso===todayStr;
@@ -963,7 +1215,7 @@ function renderPlanningWeek(){
     }).join('');
     return `<div class="planDayCol${isToday?' today':''}" style="height:${gridHeight}px;">${chips}</div>`;
   }).join('');
- 
+
   wrap.innerHTML = `
     <div class="planWeekGridWrap">
       <div class="planWeekHead">
@@ -1082,7 +1334,7 @@ function openPlanningForm(){
       closeModal();
       toast('Rendez-vous programmé.');
       renderPlanning(); renderMarkers(); renderList();
-    }catch(err){ toast("Échec de l'enregistrement."); }
+    }catch(err){ console.error(err); toast("Échec de l'enregistrement : "+(err&&err.message?err.message:err)); }
   });
 }
 function showEmptyState(){
@@ -1096,7 +1348,7 @@ function showEmptyState(){
   $$('#emptyAddBtn').forEach(b=>b.addEventListener('click', openClientForm));
 }
 function hideEmptyState(){ $$('#emptyState').forEach(e=>e.remove()); }
- 
+
 /* ---------------- comptabilité ---------------- */
 function inAcctPeriod(dateStr){
   if(!dateStr) return false;
@@ -1143,13 +1395,13 @@ async function renderCompta(){
   $$('.acctChip', tb).forEach(b=>b.addEventListener('click', ()=>{ acctPeriod=b.dataset.p; renderCompta(); }));
   $('#acctPrev')?.addEventListener('click', ()=>{ acctShift(-1); renderCompta(); });
   $('#acctNext')?.addEventListener('click', ()=>{ acctShift(1); renderCompta(); });
- 
+
   const visits = allVisitsCache.filter(v=>v.montant && inAcctPeriod(v.date));
   const totalFactureVisites = visits.reduce((s,v)=>s+(v.montant||0),0);
   const unpaidVisits = visits.filter(v=>!v.paid).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
   const totalImpaye = unpaidVisits.reduce((s,v)=>s+(v.montant||0),0);
   const totalEncaisseVisites = totalFactureVisites - totalImpaye;
- 
+
   const subClients = [...clients.values()].filter(c=>c.tariffType==='mensuel' && c.tariffAmount);
   const abonnementRows = subClients.map(c=>{
     const idxs = qualifyingMonthIndices(c);
@@ -1160,17 +1412,17 @@ async function renderCompta(){
     date:`${Math.floor(idx/12)}-${String(idx%12+1).padStart(2,'0')}-01`,
     clientId:r.id, montant:r.unit, paid:true, travaux:'Abonnement mensuel'
   })));
- 
+
   const totalGeneral = totalFactureVisites + totalAbonnements;
   const totalEncaisseGeneral = totalEncaisseVisites + totalAbonnements;
- 
+
   const revByClient = new Map();
   visits.forEach(v=>revByClient.set(v.clientId, (revByClient.get(v.clientId)||0) + (v.montant||0)));
   abonnementRows.forEach(r=>revByClient.set(r.id, (revByClient.get(r.id)||0) + r.total));
   const revRows = [...revByClient.entries()]
     .map(([cid,total])=>({name: clients.get(cid)?.name || 'Client supprimé', total, sub: clients.get(cid)?.tariffType==='mensuel'}))
     .sort((a,b)=>b.total-a.total);
- 
+
   const unpaidHtml = unpaidVisits.length ? unpaidVisits.map(v=>{
     const c = clients.get(v.clientId);
     return `<div class="unpaidRow">
@@ -1182,15 +1434,15 @@ async function renderCompta(){
       <button class="payToggle unpaid acctPayBtn" data-vid="${v.id}" type="button">Marquer payé</button>
     </div>`;
   }).join('') : `<div class="muted" style="font-size:.85rem;padding:6px 0;">Aucun impayé sur cette période 🎉</div>`;
- 
+
   const subHtml = abonnementRows.length ? abonnementRows.map(r=>`
     <div class="revRow"><span>${esc(r.name)} <span class="miniTag">${r.months} mois × ${fmtEUR(r.unit)}</span></span><span class="revAmount">${fmtEUR(r.total)}</span></div>
   `).join('') : `<div class="muted" style="font-size:.85rem;padding:6px 0;">Aucun client en forfait mensuel sur cette période.</div>`;
- 
+
   const revHtml = revRows.length ? revRows.map(r=>`
     <div class="revRow"><span>${esc(r.name)}${r.sub?' <span class="miniTag">Abonnement</span>':''}</span><span class="revAmount">${fmtEUR(r.total)}</span></div>
   `).join('') : `<div class="muted" style="font-size:.85rem;padding:6px 0;">Aucune facturation sur cette période.</div>`;
- 
+
   $('#acctBody').innerHTML = `
     <div class="statGrid">
       <div class="statTile"><div class="statLabel">Total facturé</div><div class="statValue">${fmtEUR(totalGeneral)}</div></div>
@@ -1242,7 +1494,7 @@ function exportAccountingCSV(visits){
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(url), 2000);
 }
- 
+
 /* ---------------- matériel ---------------- */
 async function renderEquipment(){
   equipmentCache = await LocalDB.getAllEquipment().catch(()=>[]);
@@ -1345,17 +1597,17 @@ function openEquipmentForm(existing){
       closeModal();
       toast(existing?'Matériel modifié.':'Matériel ajouté.');
       renderEquipment();
-    }catch(err){ toast("Échec de l'enregistrement."); }
+    }catch(err){ console.error(err); toast("Échec de l'enregistrement : "+(err&&err.message?err.message:err)); }
   });
 }
- 
+
 /* ---------------- FAB ---------------- */
 function bindFab(){ $('#fabAdd').addEventListener('click', ()=>{
   if(currentView==='materiel') openEquipmentForm();
   else if(currentView==='planning') openPlanningForm();
   else openClientForm();
 }); }
- 
+
 /* ---------------- modal helpers ---------------- */
 function openModal(html){
   const root=$('#modalRoot');
@@ -1364,7 +1616,7 @@ function openModal(html){
   return root;
 }
 function closeModal(){ $('#modalRoot').innerHTML=''; }
- 
+
 /* ---------------- client profile sheet ---------------- */
 async function openProfile(id){
   openClientId=id;
@@ -1374,7 +1626,7 @@ async function openProfile(id){
   if(openClientId===id) renderSheetContent();
 }
 function closeSheet(){ openClientId=null; closeModal(); }
- 
+
 function renderSheetContent(){
   const c = clients.get(openClientId);
   if(!c){ closeSheet(); return; }
@@ -1388,26 +1640,26 @@ function renderSheetContent(){
   } else {
     posLine = `<span class="muted">Pas encore positionné sur la carte.</span>`;
   }
- 
+
   const contact = `<div class="contactRow">
     ${c.phone?`<a class="pillLink" href="tel:${esc(c.phone)}">${icon('phone')}${esc(c.phone)}</a>`:''}
     ${c.email?`<a class="pillLink" href="mailto:${esc(c.email)}">${icon('mail')}${esc(c.email)}</a>`:''}
   </div>`;
- 
+
   const gardenBits = [c.gardenType, c.surface?`${c.surface}`:null].filter(Boolean).join(' · ');
   const tarifText = c.tariffType==='horaire' ? (c.tariffAmount?`${fmtEUR(c.tariffAmount)} / heure`:'Tarif horaire') :
                     c.tariffType==='forfait' ? (c.tariffAmount?`Forfait ${fmtEUR(c.tariffAmount)}`:'Forfait') :
                     c.tariffType==='mensuel' ? (c.tariffAmount?`${fmtEUR(c.tariffAmount)} / mois (abonnement)`:'Forfait mensuel') : '';
- 
+
   const photosHtml = currentPhotos.map(p=>`<img class="photoThumb" src="${p.dataUrl}" data-full="${p.dataUrl}">`).join('');
- 
+
   const lastLine = c.lastVisitAt
     ? `<div class="lastVisitBanner">${icon('check')} Dernier passage : <strong>${fmtDate(c.lastVisitAt)}</strong> (${relDays(c.lastVisitAt)}) · ${currentVisits.length} passage${currentVisits.length>1?'s':''} enregistré${currentVisits.length>1?'s':''}</div>`
     : `<div class="lastVisitBanner">Aucun passage enregistré pour l'instant.</div>`;
   const nvTimeRange = c.nextVisitTime ? ` à ${c.nextVisitTime}${c.nextVisitEndTime?'–'+c.nextVisitEndTime:''}` : '';
   const nextLine = c.nextVisitAt
     ? `<div class="lastVisitBanner${isRdvSoon(c)?' soonText':''}">${icon('pin')} Prochain rendez-vous : <strong>${fmtDate(c.nextVisitAt)}${nvTimeRange}</strong> (${relDays(c.nextVisitAt)})${c.nextVisitType?' · '+esc(c.nextVisitType):''}</div>` : '';
- 
+
   const visitsHtml = currentVisits.map(v=>`
     <div class="visitItem">
       <button class="vDel" data-vid="${v.id}" title="Supprimer ce passage">${icon('trash')}</button>
@@ -1416,7 +1668,7 @@ function renderSheetContent(){
       ${v.travaux?`<div class="vTasks">${esc(v.travaux)}</div>`:''}
       ${v.remarques?`<div class="vTasks muted">${esc(v.remarques)}</div>`:''}
     </div>`).join('') || `<div class="muted" style="font-size:.85rem;">—</div>`;
- 
+
   const html = `
     <div class="sheetHead">
       <h2>${esc(c.name)}</h2>
@@ -1541,7 +1793,7 @@ async function deleteVisit(clientId, visitId){
     renderMarkers(); renderList(); renderSheetContent();
   }catch(e){ toast('Échec de la suppression.'); }
 }
- 
+
 /* ---------------- forms: client ---------------- */
 function openClientForm(existing){
   const c = existing || {};
@@ -1608,7 +1860,7 @@ function openClientForm(existing){
   $('#closeFormBtn').addEventListener('click', ()=> existing?renderSheetContent():closeModal());
   $('#cancelFormBtn').addEventListener('click', ()=> existing?renderSheetContent():closeModal());
   let capturedPos=null;
- 
+
   const gpsBtn = $('#f_gps');
   if(gpsBtn) gpsBtn.addEventListener('click', ()=>{
     if(!navigator.geolocation){ toast('Géolocalisation indisponible.'); return; }
@@ -1635,7 +1887,7 @@ function openClientForm(existing){
       toast('Adresse trouvée.');
     }catch(e){ geoBtn.innerHTML = icon('pin')+' Localiser'; toast('Recherche impossible (connexion internet ?).'); }
   });
- 
+
   $('#clientForm').addEventListener('submit', async e=>{
     e.preventDefault();
     const name = $('#f_name').value.trim();
@@ -1673,10 +1925,10 @@ function openClientForm(existing){
         renderMarkers(); renderList();
         if(!capturedPos) openProfile(newId);
       }
-    }catch(err){ toast("Échec de l'enregistrement."); }
+    }catch(err){ console.error(err); toast("Échec de l'enregistrement : "+(err&&err.message?err.message:err)); }
   });
 }
- 
+
 /* ---------------- forms: visit ---------------- */
 function openVisitForm(clientId){
   const html = `
@@ -1722,10 +1974,10 @@ function openVisitForm(clientId){
       await reloadVisitsAndPhotos(clientId);
       toast('Passage enregistré.');
       renderMarkers(); renderList(); renderSheetContent();
-    }catch(err){ toast("Échec de l'enregistrement."); }
+    }catch(err){ console.error(err); toast("Échec de l'enregistrement : "+(err&&err.message?err.message:err)); }
   });
 }
- 
+
 /* ---------------- photos ---------------- */
 function compressImage(file){
   return new Promise((resolve,reject)=>{
@@ -1758,7 +2010,7 @@ async function handlePhotoUpload(clientId, files){
   }catch(err){ toast("Échec de l'ajout de la photo."); }
   const input = $('#photoInput'); if(input) input.value='';
 }
- 
+
 /* ---------------- export / import ---------------- */
 async function exportData(){
   try{
@@ -1783,9 +2035,8 @@ async function importData(file){
     toast('Sauvegarde importée.');
   }catch(err){ toast("Fichier de sauvegarde invalide."); }
 }
- 
+
 })();
 </script>
 </body>
 </html>
- 
