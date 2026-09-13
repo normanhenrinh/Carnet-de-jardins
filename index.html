@@ -30,6 +30,8 @@
     --clay-light:#F3DED1;
     --gold:#B0842A;
     --gold-light:#F1E5C7;
+    --sky:#3B6E93;
+    --sky-light:#DCE9F0;
     --line:#DBDFCC;
     --danger:#B23A34;
     --danger-light:#F4DAD8;
@@ -47,6 +49,7 @@
       --moss:#7FB894; --moss-dark:#5C9575; --moss-light:#223A2C;
       --clay:#E2894F; --clay-light:#3A2A1F;
       --gold:#D8AC55; --gold-light:#372D18;
+      --sky:#7FB4D6; --sky-light:#1E323D;
       --line:#2C3B31; --danger:#E27069; --danger-light:#3B2422;
       --shadow:0 10px 30px -10px rgba(0,0,0,.5); --shadow-sm:0 2px 10px rgba(0,0,0,.35);
     }
@@ -57,6 +60,7 @@
     --moss:#7FB894; --moss-dark:#5C9575; --moss-light:#223A2C;
     --clay:#E2894F; --clay-light:#3A2A1F;
     --gold:#D8AC55; --gold-light:#372D18;
+    --sky:#7FB4D6; --sky-light:#1E323D;
     --line:#2C3B31; --danger:#E27069; --danger-light:#3B2422;
     --shadow:0 10px 30px -10px rgba(0,0,0,.5); --shadow-sm:0 2px 10px rgba(0,0,0,.35);
   }
@@ -70,7 +74,7 @@
   :focus-visible{outline:2.5px solid var(--clay);outline-offset:2px;border-radius:4px;}
   ::selection{background:var(--moss-light);}
   @media (prefers-reduced-motion: reduce){ *{animation-duration:.001ms !important;transition-duration:.001ms !important;} }
-
+ 
   /* ---------- topbar ---------- */
   .topbar{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--surface);border-bottom:1px solid var(--line);position:relative;z-index:20;flex:none;}
   .brand{display:flex;align-items:center;gap:8px;font-family:var(--font-d);font-weight:600;font-size:1.05rem;color:var(--moss-dark);white-space:nowrap;}
@@ -80,20 +84,25 @@
   .toggleBtn{display:flex;align-items:center;gap:6px;border:none;background:transparent;color:var(--ink-dim);font-size:.85rem;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer;}
   .toggleBtn.active{background:var(--moss);color:#fff;}
   .toggleBtn svg{width:15px;height:15px;}
+  @media (max-width:600px){
+    .brand span{display:none;}
+    .toggleBtn{padding:9px 11px;}
+    .toggleBtn .tbLabel{display:none;}
+  }
   .iconBtn{border:none;background:var(--surface-2);color:var(--ink);width:36px;height:36px;border-radius:999px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
   .iconBtn:hover{background:var(--line);}
   .iconBtn svg{width:18px;height:18px;}
-
+ 
   .menuPanel{position:absolute;top:58px;right:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);box-shadow:var(--shadow);padding:6px;min-width:250px;z-index:30;}
   .menuPanel button{display:flex;width:100%;align-items:center;gap:10px;padding:10px 10px;border:none;background:none;border-radius:var(--r-s);color:var(--ink);font-size:.88rem;cursor:pointer;text-align:left;}
   .menuPanel button:hover{background:var(--surface-2);}
   .menuNote{padding:10px 12px 6px;font-size:.76rem;color:var(--ink-dim);line-height:1.4;border-top:1px solid var(--line);margin-top:4px;}
-
+ 
   /* ---------- main / views ---------- */
   main{flex:1;position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:0;}
   .view{position:absolute;inset:0;display:none;flex-direction:column;}
   .view.active{display:flex;}
-
+ 
   /* MAP */
   #mapViewport{flex:1;position:relative;overflow:hidden;background:var(--bg);cursor:grab;}
   #mapViewport.placing{cursor:crosshair;}
@@ -105,58 +114,138 @@
   .leafletPin.warn .dot{background:var(--gold);}
   .leafletPin.alert .dot{background:var(--clay);}
   .leafletPin.none .dot{background:var(--ink-dim);}
+  .leafletPin.soon .dot{background:var(--sky);}
+  .leafletPin.sub .dot{box-shadow:0 0 0 2px var(--gold), var(--shadow-sm);}
   .mePinDot{width:16px;height:16px;border-radius:50%;background:#3E7BC4;border:2px solid var(--surface);box-shadow:var(--shadow-sm);}
-
+ 
   .leaflet-control-zoom a{background:var(--surface) !important;color:var(--ink) !important;border-color:var(--line) !important;}
   .leaflet-control-zoom a:hover{background:var(--surface-2) !important;}
   .leaflet-control-scale-line{background:rgba(255,255,255,.8) !important;border-color:var(--ink-dim) !important;color:var(--ink) !important;font-family:var(--font-m) !important;}
   .leaflet-popup-content-wrapper{border-radius:var(--r-m) !important;}
   .leaflet-bar, .leaflet-control-zoom{box-shadow:var(--shadow-sm) !important;border:none !important;}
-
+ 
   .mapOverlayTop{position:absolute;top:12px;left:56px;right:12px;display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;pointer-events:none;z-index:600;}
   .mapOverlayTop>*{pointer-events:auto;}
   .chip{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm);border-radius:999px;padding:7px 12px;font-size:.78rem;font-weight:600;display:flex;align-items:center;gap:6px;color:var(--ink-dim);}
   .chip.warnChip{background:var(--clay-light);color:var(--clay);border-color:transparent;cursor:pointer;}
   .placingBanner{background:var(--moss-dark);color:#fff;border-radius:var(--r-m);padding:10px 14px;font-size:.85rem;font-weight:600;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;width:100%;}
   .placingBanner button{margin-left:auto;background:rgba(255,255,255,.18);border:none;color:#fff;border-radius:999px;padding:5px 11px;font-size:.78rem;font-weight:600;cursor:pointer;}
-
+ 
   .mapControls{position:absolute;right:12px;bottom:36px;display:flex;flex-direction:column;gap:8px;z-index:600;}
   .mapBtn{width:42px;height:42px;border-radius:999px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink);}
   .mapBtn svg{width:19px;height:19px;}
-
+ 
   .legend{position:absolute;left:12px;bottom:36px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);box-shadow:var(--shadow-sm);padding:9px 11px;font-size:.72rem;color:var(--ink-dim);display:flex;flex-direction:column;gap:4px;z-index:600;}
   .legend .row{display:flex;align-items:center;gap:6px;}
   .legend .sw{width:9px;height:9px;border-radius:50%;flex:none;}
-
+ 
   .fab{position:fixed;right:18px;bottom:calc(24px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:999px;background:var(--clay);color:#fff;border:none;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:700;}
   .fab svg{width:24px;height:24px;}
   .fab:hover{filter:brightness(.95);}
-
+ 
   .emptyState{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:14px;background:var(--bg);z-index:2;pointer-events:none;}
   .emptyState.overMap{background:transparent;}
   .emptyState>*{pointer-events:auto;}
   .emptyState svg{width:52px;height:52px;color:var(--moss);}
   .emptyState h2{font-size:1.3rem;color:var(--ink);}
   .emptyState p{margin:0;color:var(--ink-dim);font-size:.9rem;max-width:280px;line-height:1.5;background:var(--surface);padding:2px 10px;border-radius:var(--r-s);}
-
+ 
   /* LIST */
   .searchBar{padding:10px 14px;background:var(--surface);border-bottom:1px solid var(--line);display:flex;gap:8px;}
   .searchBar .searchField{flex:1;display:flex;align-items:center;gap:8px;background:var(--surface-2);border-radius:999px;padding:8px 13px;}
   .searchBar .searchField svg{width:16px;height:16px;color:var(--ink-dim);flex:none;}
   .searchBar input{border:none;background:none;outline:none;font-size:.9rem;color:var(--ink);width:100%;font-family:inherit;}
+  .listFilters{display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px 0;}
   .listWrap{flex:1;overflow-y:auto;padding:10px 14px calc(90px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px;}
+  .acctToolbar{padding:10px 14px;background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .acctChip{border:1px solid var(--line);background:var(--surface);color:var(--ink-dim);border-radius:999px;padding:7px 13px;font-size:.79rem;font-weight:600;cursor:pointer;}
+  .acctChip.active{background:var(--moss);color:#fff;border-color:transparent;}
+  .acctNav{display:flex;align-items:center;gap:4px;margin-left:auto;}
+  .acctNav .iconBtn{width:30px;height:30px;}
+  .acctNav .iconBtn svg{width:15px;height:15px;}
+  .acctPeriodLabel{font-weight:700;font-size:.83rem;min-width:108px;text-align:center;text-transform:capitalize;}
+  .acctBody{flex:1;overflow-y:auto;padding:14px 14px calc(90px + env(safe-area-inset-bottom,0px));}
+  .statGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+  .statTile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:12px 14px;}
+  .statTile .statLabel{font-size:.71rem;color:var(--ink-dim);font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+  .statTile .statValue{font-family:var(--font-d);font-size:1.45rem;font-weight:600;margin-top:3px;color:var(--ink);}
+  .statTile.ok .statValue{color:var(--moss-dark);}
+  .statTile.alert .statValue{color:var(--clay);}
+  .unpaidRow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);}
+  .unpaidRow:last-child{border-bottom:none;}
+  .unpaidRow .uInfo{flex:1;min-width:0;}
+  .unpaidRow .uName{font-weight:600;font-size:.87rem;}
+  .unpaidRow .uMeta{font-size:.75rem;color:var(--ink-dim);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .unpaidRow .uAmount{font-family:var(--font-m);font-weight:700;color:var(--clay);white-space:nowrap;}
+  .revRow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.86rem;}
+  .revRow:last-child{border-bottom:none;}
+  .revRow .revAmount{font-family:var(--font-m);font-weight:700;white-space:nowrap;}
+  .payToggle{border:none;border-radius:999px;padding:6px 11px;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;flex:none;}
+  .payToggle.paid{background:var(--moss-light);color:var(--moss-dark);}
+  .payToggle.unpaid{background:var(--clay-light);color:var(--clay);}
+  .vMeta .payToggle{margin-left:8px;padding:2px 9px;font-size:.68rem;vertical-align:middle;}
+  .miniTag{display:inline-block;background:var(--gold-light);color:var(--gold);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:999px;vertical-align:middle;white-space:nowrap;}
   .clientCard{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:12px 13px;cursor:pointer;text-align:left;}
   .clientCard:hover{border-color:var(--moss);}
   .clientCard .avatar{width:38px;height:38px;border-radius:50%;background:var(--moss-light);color:var(--moss-dark);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:600;flex:none;font-size:1rem;}
+  .clientCard .avatar.warn{background:var(--gold-light);color:var(--gold);}
+  .clientCard .avatar.alert{background:var(--clay-light);color:var(--clay);}
+  .clientCard .avatar.none{background:var(--surface-2);color:var(--ink-dim);}
+  .clientCard .avatar.soon{background:var(--sky-light);color:var(--sky);}
+  .clientCard .avatar.sub{box-shadow:0 0 0 2px var(--gold);}
   .clientCard .info{flex:1;min-width:0;}
-  .clientCard .name{font-weight:600;font-size:.94rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .clientCard .sub{font-size:.78rem;color:var(--ink-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;}
+  .clientCard .name{display:block;font-weight:600;font-size:.94rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .clientCard .sub{display:block;font-size:.78rem;color:var(--ink-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;}
+  .equipSummary{font-size:.78rem;color:var(--ink-dim);font-weight:600;padding:2px 2px 4px;}
+  .equipCard{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:12px 13px;cursor:pointer;text-align:left;}
+  .equipIconWrap{width:38px;height:38px;border-radius:50%;background:var(--surface-2);color:var(--ink-dim);display:flex;align-items:center;justify-content:center;flex:none;}
+  .equipIconWrap svg{width:17px;height:17px;}
+  .equipCard .info{flex:1;min-width:0;}
+  .equipCard .name{display:block;font-weight:600;font-size:.94rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .equipCard .sub{display:block;font-size:.78rem;color:var(--ink-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;}
+  .equipPrice{font-family:var(--font-m);font-weight:700;white-space:nowrap;flex:none;}
+  .planLegend{display:flex;gap:16px;flex-wrap:wrap;padding:10px 14px 0;font-size:.72rem;color:var(--ink-dim);}
+  .planLegend span{display:flex;align-items:center;gap:6px;}
+  .planLegend .sw{width:10px;height:10px;border-radius:50%;flex:none;}
+  .planWrap{flex:1;min-height:0;overflow-y:auto;padding:10px 14px 14px;display:flex;flex-direction:column;gap:8px;}
+  .planWrap.listMode{overflow-y:auto;padding-bottom:calc(90px + env(safe-area-inset-bottom,0px));}
+  .planDateHeader{font-size:.78rem;font-weight:700;color:var(--ink-dim);text-transform:capitalize;padding:10px 2px 2px;}
+  .planDateHeader:first-child{padding-top:2px;}
+  .planDateHeader.late{color:var(--clay);}
+  .planCard{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:12px 13px;cursor:pointer;text-align:left;}
+  .planCard .avatar{width:38px;height:38px;border-radius:50%;background:var(--moss-light);color:var(--moss-dark);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:600;flex:none;font-size:1rem;}
+  .planCard .avatar.sub{background:var(--gold-light);color:var(--gold);}
+  .planCard .info{flex:1;min-width:0;}
+  .planCard .name{display:block;font-weight:600;font-size:.94rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .planCard .addr{display:block;font-size:.78rem;color:var(--ink-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;}
+  .planCard .badge.late{background:var(--clay-light);color:var(--clay);}
+  .planTime{font-family:var(--font-m);color:var(--ink-dim);font-weight:700;}
+  .planWeekGridWrap{flex:1;min-height:0;display:flex;flex-direction:column;overflow:auto;border:1px solid var(--line);border-radius:var(--r-m);background:var(--surface);}
+  .planWeekHead{display:flex;position:sticky;top:0;z-index:2;background:var(--surface);border-bottom:1px solid var(--line);flex:none;}
+  .planGutterHead{width:38px;flex:none;}
+  .planDayHead{flex:1 0 52px;text-align:center;padding:6px 0;border-left:1px solid var(--line);}
+  .planDayHead.today{background:var(--moss-light);}
+  .planDayName{font-size:.64rem;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.03em;}
+  .planDayNum{font-size:.92rem;font-weight:700;color:var(--ink);font-family:var(--font-m);}
+  .planWeekBody{display:flex;flex:1;}
+  .planGutter{width:38px;flex:none;}
+  .planHourLabel{font-size:.56rem;color:var(--ink-dim);text-align:right;padding:1px 5px 0 0;box-sizing:border-box;opacity:.6;}
+  .planHourLabel.onHour{font-size:.62rem;font-weight:700;color:var(--ink);opacity:1;}
+  .planDayCols{display:flex;flex:1;}
+  .planDayCol{flex:1 0 52px;position:relative;border-left:1px solid var(--line);background-image:repeating-linear-gradient(to bottom, var(--line) 0, var(--line) 1px, transparent 1px, transparent 56px),repeating-linear-gradient(to bottom, var(--surface-2) 0, var(--surface-2) 1px, transparent 1px, transparent 28px);}
+  .planDayCol.today{background-color:var(--moss-light);opacity:.97;}
+  .planChip{position:absolute;left:2px;right:2px;min-height:26px;border-radius:6px;padding:2px 5px;font-size:.6rem;line-height:1.15;background:var(--moss-light);color:var(--moss-dark);border:1px solid var(--moss-dark);cursor:pointer;overflow:hidden;}
+  .planChip.sub{background:var(--gold-light);color:var(--gold);border-color:var(--gold);}
+  .planChipTime{display:block;font-weight:700;font-family:var(--font-m);}
+  .planChipName{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .planChipType{display:block;font-size:.56rem;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .badge{font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:999px;flex:none;white-space:nowrap;}
   .badge.ok{background:var(--moss-light);color:var(--moss-dark);}
   .badge.warn{background:var(--gold-light);color:var(--gold);}
   .badge.alert{background:var(--clay-light);color:var(--clay);}
   .badge.none{background:var(--surface-2);color:var(--ink-dim);}
-
+  .badge.soon{background:var(--sky-light);color:var(--sky);}
+ 
   /* ---------- sheet / modal ---------- */
   .backdrop{position:fixed;inset:0;background:rgba(18,24,20,.45);z-index:1000;display:flex;align-items:flex-end;justify-content:center;}
   @media (min-width:640px){ .backdrop{align-items:center;} }
@@ -166,13 +255,13 @@
   .sheetHead h2{font-size:1.3rem;flex:1;min-width:0;}
   .sheetHead .headBtns{display:flex;gap:6px;flex:none;}
   .sheetBody{overflow-y:auto;padding:14px 16px calc(20px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:16px;}
-
+ 
   .section{display:flex;flex-direction:column;gap:8px;}
   .sectionTitle{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);}
   .contactRow{display:flex;gap:8px;flex-wrap:wrap;}
   .pillLink{display:flex;align-items:center;gap:6px;background:var(--surface-2);border-radius:999px;padding:7px 12px;font-size:.83rem;color:var(--ink);text-decoration:none;font-weight:600;}
   .pillLink svg{width:14px;height:14px;color:var(--moss-dark);}
-
+ 
   .infoCard{background:var(--surface-2);border-radius:var(--r-m);padding:12px 13px;font-size:.86rem;color:var(--ink);line-height:1.55;}
   .infoCard .muted{color:var(--ink-dim);}
   .posRow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
@@ -180,13 +269,13 @@
   .smallBtn:hover{border-color:var(--moss);}
   .smallBtn svg{width:13px;height:13px;}
   .coord{font-family:var(--font-m);font-size:.74rem;color:var(--ink-dim);}
-
+ 
   .photoRow{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;}
   .photoThumb{width:84px;height:84px;border-radius:var(--r-s);object-fit:cover;flex:none;background:var(--surface-2);cursor:pointer;}
   .addPhotoTile{width:84px;height:84px;border-radius:var(--r-s);border:1.5px dashed var(--line);color:var(--ink-dim);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex:none;background:none;cursor:pointer;font-size:.68rem;font-weight:600;}
   .addPhotoTile svg{width:18px;height:18px;}
   .addPhotoTile:hover{border-color:var(--moss);color:var(--moss-dark);}
-
+ 
   .visitItem{border-left:2px solid var(--moss-light);padding:2px 0 2px 13px;position:relative;}
   .visitItem::before{content:"";position:absolute;left:-4.5px;top:6px;width:8px;height:8px;border-radius:50%;background:var(--moss);}
   .visitItem .vDate{font-weight:700;font-size:.83rem;color:var(--ink);font-family:var(--font-d);}
@@ -197,14 +286,16 @@
   .visitList{display:flex;flex-direction:column;gap:12px;}
   .lastVisitBanner{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--ink-dim);}
   .lastVisitBanner strong{color:var(--ink);}
-
+  .lastVisitBanner.soonText{color:var(--sky);}
+  .lastVisitBanner.soonText strong{color:var(--sky);}
+ 
   .btnRow{display:flex;gap:8px;flex-wrap:wrap;}
   .btnPrimary{background:var(--moss);color:#fff;border:none;border-radius:999px;padding:9px 16px;font-size:.85rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
   .btnPrimary:hover{background:var(--moss-dark);}
   .btnPrimary svg{width:14px;height:14px;}
   .btnGhost{background:none;border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:9px 16px;font-size:.85rem;font-weight:600;cursor:pointer;}
   .btnDanger{background:none;border:1px solid var(--danger);color:var(--danger);border-radius:999px;padding:9px 16px;font-size:.85rem;font-weight:600;cursor:pointer;}
-
+ 
   /* ---------- forms ---------- */
   .formGrid{display:flex;flex-direction:column;gap:12px;}
   .field{display:flex;flex-direction:column;gap:5px;}
@@ -220,18 +311,18 @@
   .posStatus{font-size:.78rem;color:var(--moss-dark);background:var(--moss-light);border-radius:var(--r-s);padding:8px 10px;display:none;align-items:center;gap:6px;}
   .posStatus.show{display:flex;}
   .posStatus svg{width:14px;height:14px;flex:none;}
-
+ 
   /* lightbox */
   .lightbox{position:fixed;inset:0;background:rgba(10,14,11,.9);z-index:1100;display:flex;align-items:center;justify-content:center;padding:24px;}
   .lightbox img{max-width:100%;max-height:100%;border-radius:var(--r-s);}
   .lightbox button{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.15);border:none;color:#fff;width:38px;height:38px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-
+ 
   /* toast */
   #toastWrap{position:fixed;left:0;right:0;bottom:calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:8px;z-index:1200;pointer-events:none;}
   .toast{background:var(--ink);color:var(--bg);font-size:.83rem;font-weight:600;padding:10px 16px;border-radius:999px;box-shadow:var(--shadow);max-width:88vw;text-align:center;}
   :root:not([data-theme="light"]) .toast{background:var(--surface-2);color:var(--ink);border:1px solid var(--line);}
   :root[data-theme="dark"] .toast{background:var(--surface-2);color:var(--ink);border:1px solid var(--line);}
-
+ 
   .fallback{position:absolute;inset:0;z-index:10;display:none;align-items:center;justify-content:center;padding:30px;text-align:center;color:var(--ink-dim);font-size:.9rem;background:var(--bg);}
 </style>
 </head>
@@ -243,20 +334,32 @@
       <span>Carnet de <em>Jardins</em></span>
     </div>
     <div class="viewToggle" role="tablist">
-      <button class="toggleBtn active" data-view="map" type="button">
+      <button class="toggleBtn active" data-view="map" type="button" aria-label="Carte">
         <svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="9.3" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-        Carte
+        <span class="tbLabel">Carte</span>
       </button>
-      <button class="toggleBtn" data-view="list" type="button">
+      <button class="toggleBtn" data-view="list" type="button" aria-label="Liste">
         <svg viewBox="0 0 24 24" fill="none"><path d="M8 6h13M8 12h13M8 18h13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="3.5" cy="6" r="1.4" fill="currentColor"/><circle cx="3.5" cy="12" r="1.4" fill="currentColor"/><circle cx="3.5" cy="18" r="1.4" fill="currentColor"/></svg>
-        Liste
+        <span class="tbLabel">Liste</span>
+      </button>
+      <button class="toggleBtn" data-view="planning" type="button" aria-label="Planning">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15.5" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M3.5 9.5h17M8 3v3.6M16 3v3.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        <span class="tbLabel">Planning</span>
+      </button>
+      <button class="toggleBtn" data-view="compta" type="button" aria-label="Comptabilité">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="6.5" width="17" height="12.5" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 10h17" stroke="currentColor" stroke-width="1.8"/><circle cx="16.5" cy="14.2" r="1.2" fill="currentColor"/></svg>
+        <span class="tbLabel">Compta</span>
+      </button>
+      <button class="toggleBtn" data-view="materiel" type="button" aria-label="Matériel">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M21 7.5a4.5 4.5 0 0 1-6.1 4.2L8.5 18a2 2 0 1 1-2.8-2.8l6.3-6.3A4.5 4.5 0 1 1 21 7.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        <span class="tbLabel">Matériel</span>
       </button>
     </div>
     <button class="iconBtn" id="menuBtn" type="button" aria-label="Menu">
       <svg viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/></svg>
     </button>
   </header>
-
+ 
   <main id="main">
     <section class="view active" id="mapView">
       <div id="mapViewport">
@@ -264,10 +367,12 @@
       </div>
       <div class="mapOverlayTop" id="mapOverlayTop"></div>
       <div class="legend" id="legend">
+        <div class="row"><span class="sw" style="background:var(--sky)"></span>Rdv proche (&lt;14j)</div>
         <div class="row"><span class="sw" style="background:var(--moss)"></span>Passage récent</div>
         <div class="row"><span class="sw" style="background:var(--gold)"></span>À prévoir</div>
         <div class="row"><span class="sw" style="background:var(--clay)"></span>En retard</div>
         <div class="row"><span class="sw" style="background:var(--ink-dim)"></span>Jamais visité</div>
+        <div class="row"><span class="sw" style="background:var(--surface);box-shadow:0 0 0 2px var(--gold);"></span>Abonnement mensuel</div>
       </div>
       <div class="mapControls">
         <button class="mapBtn" id="locateBtn" type="button" aria-label="Me localiser">
@@ -278,7 +383,7 @@
         </button>
       </div>
     </section>
-
+ 
     <section class="view" id="listView">
       <div class="searchBar">
         <div class="searchField">
@@ -286,9 +391,32 @@
           <input type="text" id="searchInput" placeholder="Rechercher un client, une adresse…">
         </div>
       </div>
+      <div class="listFilters" id="listFilters">
+        <button class="acctChip active" data-f="all" type="button">Tous</button>
+        <button class="acctChip" data-f="sub" type="button">Avec abonnement</button>
+        <button class="acctChip" data-f="nosub" type="button">Sans abonnement</button>
+      </div>
       <div class="listWrap" id="listWrap"></div>
     </section>
-
+ 
+    <section class="view" id="planningView">
+      <div class="planLegend">
+        <span><span class="sw" style="background:var(--gold-light);border:2px solid var(--gold);"></span>Abonnement mensuel</span>
+        <span><span class="sw" style="background:var(--moss-light);border:2px solid var(--moss-dark);"></span>Sans abonnement</span>
+      </div>
+      <div class="acctToolbar" id="planToolbar"></div>
+      <div class="planWrap" id="planWrap"></div>
+    </section>
+ 
+    <section class="view" id="comptaView">
+      <div class="acctToolbar" id="acctToolbar"></div>
+      <div class="acctBody" id="acctBody"></div>
+    </section>
+ 
+    <section class="view" id="materielView">
+      <div class="listWrap" id="equipWrap"></div>
+    </section>
+ 
     <div class="fallback" id="fallback" style="display:none">
       <div>
         <p style="margin:0 0 10px;">Votre navigateur ne permet pas d'enregistrer les données de cette application (mode navigation privée, ou navigateur trop ancien).</p>
@@ -296,26 +424,26 @@
       </div>
     </div>
   </main>
-
+ 
   <button class="fab" id="fabAdd" type="button" aria-label="Ajouter un client">
     <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
   </button>
 </div>
-
+ 
 <div id="toastWrap"></div>
 <div id="modalRoot"></div>
-
+ 
 <script>
 (function(){
 "use strict";
-
+ 
 /* ---------------- utilities ---------------- */
 const $  = (s,r=document)=>r.querySelector(s);
 const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
 const esc = s => (s==null?'':String(s)).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clamp = (v,a,b)=>Math.min(b,Math.max(a,v));
 const uid = ()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36);
-
+ 
 function toast(msg){
   const wrap = $('#toastWrap');
   const el = document.createElement('div');
@@ -323,8 +451,9 @@ function toast(msg){
   wrap.appendChild(el);
   setTimeout(()=>{ el.style.transition='opacity .4s'; el.style.opacity='0'; setTimeout(()=>el.remove(),400); }, 2600);
 }
-
+ 
 const MOIS = ['jan.','fév.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+const MOIS_LONG = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 function fmtDate(ts){
   const d = typeof ts==='string' ? new Date(ts+'T00:00:00') : new Date(ts);
   if(isNaN(d)) return '';
@@ -345,7 +474,15 @@ function relDays(ts){
   return `il y a ${Math.floor(n/365)} an(s)`;
 }
 function todayISO(){ const d=new Date(); return d.toISOString().slice(0,10); }
-
+const WEEKDAY_SHORT = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+function isoDateLocal(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function addDays(d,n){ const nd=new Date(d); nd.setDate(nd.getDate()+n); return nd; }
+function startOfWeek(d){ const nd=new Date(d); nd.setHours(0,0,0,0); const day=(nd.getDay()+6)%7; return addDays(nd,-day); }
+function weekLabel(start,end){
+  if(start.getMonth()===end.getMonth()) return `${start.getDate()} – ${end.getDate()} ${MOIS[start.getMonth()]} ${end.getFullYear()}`;
+  return `${start.getDate()} ${MOIS[start.getMonth()]} – ${end.getDate()} ${MOIS[end.getMonth()]} ${end.getFullYear()}`;
+}
+ 
 function recency(lastVisitAt){
   if(!lastVisitAt) return 'none';
   const n = daysAgo(lastVisitAt);
@@ -353,8 +490,24 @@ function recency(lastVisitAt){
   if(n<=30) return 'warn';
   return 'alert';
 }
-const RECENCY_LABEL = {ok:'À jour', warn:'À prévoir', alert:'En retard', none:'Jamais visité'};
-
+const RECENCY_LABEL = {ok:'À jour', warn:'À prévoir', alert:'En retard', none:'Jamais visité', soon:'Rdv proche'};
+function daysUntil(ts){ return -daysAgo(ts); }
+function isRdvSoon(c){
+  if(!c.nextVisitAt) return false;
+  const d = daysUntil(c.nextVisitAt);
+  return d!=null && !isNaN(d) && d>=0 && d<=14;
+}
+function isSub(c){ return c.tariffType==='mensuel'; }
+function statusClass(c){ return isRdvSoon(c) ? 'soon' : recency(c.lastVisitAt); }
+function statusLabel(c){
+  if(isRdvSoon(c)){
+    const d = daysUntil(c.nextVisitAt);
+    const when = d===0 ? "aujourd'hui" : d===1 ? 'demain' : `dans ${d} jours`;
+    return `${RECENCY_LABEL.soon} · ${when}`;
+  }
+  return c.lastVisitAt ? RECENCY_LABEL[recency(c.lastVisitAt)]+' · '+relDays(c.lastVisitAt) : 'Jamais visité';
+}
+ 
 function haversine(lat1,lng1,lat2,lng2){
   const R=6371000, toRad=d=>d*Math.PI/180;
   const dLat=toRad(lat2-lat1), dLng=toRad(lng2-lng1);
@@ -389,7 +542,7 @@ async function geocodeAddress(query){
   if(!data.length) return null;
   return {lat:parseFloat(data[0].lat), lng:parseFloat(data[0].lon), label:data[0].display_name};
 }
-
+ 
 function icon(name){
   const I = {
     phone:'<path d="M6.6 10.5c1.3 2.6 3.4 4.7 6 6l2-2c.3-.3.7-.4 1-.3 1.1.4 2.3.6 3.5.6.6 0 1 .4 1 1v3.4c0 .6-.4 1-1 1C10.8 20.2 3.8 13.2 3.8 5c0-.6.4-1 1-1H8c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.3 0 .7-.3 1l-2 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>',
@@ -405,11 +558,16 @@ function icon(name){
     warn:'<path d="M12 9v4.5M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/>',
     download:'<path d="M12 4v11m0 0 4-4m-4 4-4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 18h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
     upload:'<path d="M12 15V4m0 0 4 4m-4-4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 18h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
-    external:'<path d="M9 6H6a1.5 1.5 0 0 0-1.5 1.5v10A1.5 1.5 0 0 0 6 19h10a1.5 1.5 0 0 0 1.5-1.5V15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 4h6v6M19 4l-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>'
+    external:'<path d="M9 6H6a1.5 1.5 0 0 0-1.5 1.5v10A1.5 1.5 0 0 0 6 19h10a1.5 1.5 0 0 0 1.5-1.5V15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 4h6v6M19 4l-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
+    chevL:'<path d="m14.5 5-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+    chevR:'<path d="m9.5 5 7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+    wallet:'<rect x="3.5" y="6.5" width="17" height="12.5" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 10h17" stroke="currentColor" stroke-width="1.6"/><circle cx="16.5" cy="14.2" r="1.2" fill="currentColor"/>',
+    wrench:'<path d="M21 7.5a4.5 4.5 0 0 1-6.1 4.2L8.5 18a2 2 0 1 1-2.8-2.8l6.3-6.3A4.5 4.5 0 1 1 21 7.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>',
+    calendar:'<rect x="3.5" y="5" width="17" height="15.5" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M3.5 9.5h17M8 3v3.6M16 3v3.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>'
   };
   return `<svg viewBox="0 0 24 24" fill="none">${I[name]||''}</svg>`;
 }
-
+ 
 /* ---------------- local storage (IndexedDB) ---------------- */
 const LocalDB = (function(){
   let dbp = null;
@@ -417,7 +575,7 @@ const LocalDB = (function(){
     if(dbp) return dbp;
     dbp = new Promise((resolve,reject)=>{
       if(!window.indexedDB){ reject(new Error('no indexedDB')); return; }
-      const req = indexedDB.open('carnetJardinsDB', 1);
+      const req = indexedDB.open('carnetJardinsDB', 2);
       req.onupgradeneeded = ()=>{
         const database = req.result;
         if(!database.objectStoreNames.contains('clients')) database.createObjectStore('clients', {keyPath:'id'});
@@ -429,6 +587,7 @@ const LocalDB = (function(){
           const s = database.createObjectStore('photos', {keyPath:'id'});
           s.createIndex('clientId','clientId');
         }
+        if(!database.objectStoreNames.contains('equipment')) database.createObjectStore('equipment', {keyPath:'id'});
       };
       req.onsuccess = ()=>resolve(req.result);
       req.onerror = ()=>reject(req.error);
@@ -463,31 +622,39 @@ const LocalDB = (function(){
       });
     },
     async getVisits(clientId){ return tx('visits','readonly', s=>reqp(s.index('clientId').getAll(clientId))); },
+    async getAllVisits(){ return tx('visits','readonly', s=>reqp(s.getAll())); },
     async addVisit(clientId, data){ const id=uid(); await tx('visits','readwrite', s=>reqp(s.add({id, clientId, ...data}))); return id; },
+    async updateVisit(visitId, patch){ return tx('visits','readwrite', async s=>{ const cur=await reqp(s.get(visitId)); if(!cur) return; return reqp(s.put({...cur, ...patch})); }); },
     async deleteVisit(clientId, visitId){ return tx('visits','readwrite', s=>reqp(s.delete(visitId))); },
     async getPhotos(clientId){ return tx('photos','readonly', s=>reqp(s.index('clientId').getAll(clientId))); },
     async addPhoto(clientId, dataUrl){ const id=uid(); await tx('photos','readwrite', s=>reqp(s.add({id, clientId, dataUrl, takenAt:Date.now()}))); return id; },
+    async getAllEquipment(){ return tx('equipment','readonly', s=>reqp(s.getAll())); },
+    async addEquipment(data){ const id=uid(); await tx('equipment','readwrite', s=>reqp(s.add({id, ...data}))); return id; },
+    async updateEquipment(id, patch){ return tx('equipment','readwrite', async s=>{ const cur=await reqp(s.get(id)); if(!cur) return; return reqp(s.put({...cur, ...patch})); }); },
+    async deleteEquipment(id){ return tx('equipment','readwrite', s=>reqp(s.delete(id))); },
     async exportAll(){
       const list = await this.getAllClients();
       const full = [];
       for(const c of list) full.push({...c, visits: await this.getVisits(c.id)});
       const photos = await tx('photos','readonly', s=>reqp(s.getAll()));
-      return {exportedAt:new Date().toISOString(), clients:full, photos};
+      const equipment = await this.getAllEquipment();
+      return {exportedAt:new Date().toISOString(), clients:full, photos, equipment};
     },
     async importAll(payload){
       if(!payload || !Array.isArray(payload.clients)) throw new Error('bad payload');
-      return tx(['clients','visits','photos'],'readwrite', async (cs,vs,ps)=>{
+      return tx(['clients','visits','photos','equipment'],'readwrite', async (cs,vs,ps,es)=>{
         for(const c of payload.clients){
           const {visits, ...clientFields} = c;
           await reqp(cs.put(clientFields));
           for(const v of (visits||[])) await reqp(vs.put({...v, clientId:c.id}));
         }
         for(const p of (payload.photos||[])) await reqp(ps.put(p));
+        for(const e of (payload.equipment||[])) await reqp(es.put(e));
       });
     }
   };
 })();
-
+ 
 /* ---------------- state ---------------- */
 let clients = new Map();
 let currentView='map';
@@ -496,7 +663,14 @@ let currentVisits=[], currentPhotos=[];
 let placingForClientId=null;
 let myLocation=null;
 let map, markersLayer, meMarker;
-
+let acctPeriod='month';
+let acctDate=new Date();
+let allVisitsCache=[];
+let listFilter='all';
+let equipmentCache=[];
+let planViewMode='week';
+let planWeekAnchor=new Date();
+ 
 async function reloadClients(){
   const list = await LocalDB.getAllClients();
   clients.clear();
@@ -506,7 +680,7 @@ async function reloadVisitsAndPhotos(id){
   currentVisits = (await LocalDB.getVisits(id)).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   currentPhotos = (await LocalDB.getPhotos(id)).sort((a,b)=>(b.takenAt||0)-(a.takenAt||0));
 }
-
+ 
 /* ---------------- init ---------------- */
 async function init(){
   bindTopbar();
@@ -533,12 +707,17 @@ function showMapUnavailable(){
   </div>`;
 }
 window.addEventListener('DOMContentLoaded', ()=>{ init(); });
-
+ 
 /* ---------------- topbar ---------------- */
 function bindTopbar(){
   $$('.toggleBtn').forEach(b=>b.addEventListener('click', ()=>switchView(b.dataset.view)));
   $('#menuBtn').addEventListener('click', e=>{ e.stopPropagation(); toggleMenu(); });
   $('#searchInput').addEventListener('input', renderList);
+  $$('#listFilters .acctChip').forEach(b=>b.addEventListener('click', ()=>{
+    listFilter = b.dataset.f;
+    $$('#listFilters .acctChip').forEach(x=>x.classList.toggle('active', x===b));
+    renderList();
+  }));
   document.addEventListener('click', ()=>{ const m=$('.menuPanel'); if(m) m.remove(); });
 }
 function switchView(v){
@@ -546,7 +725,15 @@ function switchView(v){
   $$('.toggleBtn').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
   $('#mapView').classList.toggle('active', v==='map');
   $('#listView').classList.toggle('active', v==='list');
+  $('#planningView').classList.toggle('active', v==='planning');
+  $('#comptaView').classList.toggle('active', v==='compta');
+  $('#materielView').classList.toggle('active', v==='materiel');
+  $('#fabAdd').setAttribute('aria-label', v==='materiel' ? 'Ajouter du matériel' : v==='planning' ? 'Programmer un rendez-vous' : 'Ajouter un client');
+  $('#fabAdd').style.display = (v==='compta') ? 'none' : 'flex';
   if(v==='map') requestAnimationFrame(()=>map && map.invalidateSize());
+  if(v==='compta') renderCompta();
+  if(v==='materiel') renderEquipment();
+  if(v==='planning') renderPlanning();
 }
 function toggleMenu(){
   const existing=$('.menuPanel'); if(existing){ existing.remove(); return; }
@@ -562,14 +749,15 @@ function toggleMenu(){
   $('#importBtn').addEventListener('click', ()=>$('#importInput').click());
   $('#importInput').addEventListener('change', e=>{ importData(e.target.files[0]); $('.menuPanel')?.remove(); });
 }
-
+ 
 /* ---------------- map ---------------- */
 function initMap(){
-  map = L.map('leafletMap', {zoomControl:false, attributionControl:true, worldCopyJump:true}).setView([46.6,2.4], 6);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  map = L.map('leafletMap', {zoomControl:false, attributionControl:false, worldCopyJump:true}).setView([46.6,2.4], 6);
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
     maxZoom:19,
-    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">contributeurs OpenStreetMap</a>'
+    attribution:'Fond de carte &copy; <a href="https://www.esri.com" target="_blank" rel="noopener">Esri</a> &mdash; sources : Esri, HERE, Garmin, contributeurs OpenStreetMap'
   }).addTo(map);
+  L.control.attribution({position:'bottomright', prefix:false}).addTo(map);
   L.control.zoom({position:'topleft'}).addTo(map);
   L.control.scale({position:'bottomleft', metric:true, imperial:false}).addTo(map);
   markersLayer = L.layerGroup().addTo(map);
@@ -577,12 +765,12 @@ function initMap(){
   $('#fitBtn').addEventListener('click', fitAll);
   $('#locateBtn').addEventListener('click', locateMe);
 }
-function pinClass(c){ return recency(c.lastVisitAt); }
+function pinClass(c){ return statusClass(c); }
 function renderMarkers(){
   if(!markersLayer){ renderMapOverlay(); refreshEmptyState(); return; }
   markersLayer.clearLayers();
   [...clients.values()].filter(c=>c.lat!=null&&c.lng!=null).forEach(c=>{
-    const divIcon = L.divIcon({className:'', html:`<div class="leafletPin ${pinClass(c)}"><span class="dot"></span><span class="label">${esc(c.name)}</span></div>`, iconSize:[16,16], iconAnchor:[8,8]});
+    const divIcon = L.divIcon({className:'', html:`<div class="leafletPin ${pinClass(c)}${isSub(c)?' sub':''}"><span class="dot"></span><span class="label">${esc(c.name)}</span></div>`, iconSize:[16,16], iconAnchor:[8,8]});
     const m = L.marker([c.lat,c.lng], {icon:divIcon}).addTo(markersLayer);
     m.on('click', ()=>{ if(!placingForClientId) openProfile(c.id); });
   });
@@ -649,32 +837,38 @@ function refreshEmptyState(){
   if(clients.size){ hideEmptyState(); return; }
   showEmptyState();
 }
-
+ 
 /* ---------------- list ---------------- */
 function renderList(){
   const wrap = $('#listWrap');
   const q = ($('#searchInput')?.value||'').trim().toLowerCase();
   let items = [...clients.values()];
   if(q) items = items.filter(c=> (c.name||'').toLowerCase().includes(q) || (c.address||'').toLowerCase().includes(q));
+  if(listFilter==='sub') items = items.filter(c=>c.tariffType==='mensuel');
+  if(listFilter==='nosub') items = items.filter(c=>c.tariffType!=='mensuel');
   items.sort((a,b)=>(a.name||'').localeCompare(b.name||'','fr'));
-
+ 
   if(!clients.size){ wrap.innerHTML=''; refreshEmptyState(); return; }
   hideEmptyState();
-  if(!items.length){ wrap.innerHTML = `<div style="text-align:center;color:var(--ink-dim);padding:30px 10px;font-size:.88rem;">Aucun résultat pour « ${esc(q)} ».</div>`; return; }
-
+  if(!items.length){
+    const msg = q ? `Aucun résultat pour « ${esc(q)} ».` : 'Aucun client dans cette catégorie.';
+    wrap.innerHTML = `<div style="text-align:center;color:var(--ink-dim);padding:30px 10px;font-size:.88rem;">${msg}</div>`;
+    return;
+  }
+ 
   wrap.innerHTML = items.map(c=>{
-    const rec = recency(c.lastVisitAt);
+    const rec = statusClass(c);
     const initials = (c.name||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
     const posNote = (c.lat==null) ? 'Position à définir' : (c.address||'Position enregistrée');
     const gm = gmapsUrl(c);
     return `<div class="clientCard" data-id="${c.id}" role="button" tabindex="0">
-      <span class="avatar">${esc(initials)}</span>
+      <span class="avatar ${rec}${isSub(c)?' sub':''}">${esc(initials)}</span>
       <span class="info">
         <span class="name">${esc(c.name)}</span>
         <span class="sub">${esc(posNote)}</span>
       </span>
       ${gm?`<a class="iconBtn gmapsBtn" href="${gm}" target="_blank" rel="noopener" aria-label="Ouvrir dans Google Maps" title="Ouvrir dans Google Maps">${icon('external')}</a>`:''}
-      <span class="badge ${rec}">${c.lastVisitAt?RECENCY_LABEL[rec]+' · '+relDays(c.lastVisitAt):'Jamais visité'}</span>
+      <span class="badge ${rec}">${esc(statusLabel(c))}</span>
     </div>`;
   }).join('');
   $$('.clientCard', wrap).forEach(b=>{
@@ -682,6 +876,214 @@ function renderList(){
     b.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openProfile(b.dataset.id); } });
   });
   $$('.gmapsBtn', wrap).forEach(a=>a.addEventListener('click', e=>e.stopPropagation()));
+}
+ 
+/* ---------------- planning ---------------- */
+const PLAN_START_HOUR = 7, PLAN_END_HOUR = 20, PLAN_SLOT_MIN = 30, PLAN_ROW_H = 28;
+function renderPlanning(){
+  renderPlanToolbar();
+  if(planViewMode==='week') renderPlanningWeek();
+  else renderPlanningList();
+}
+function renderPlanToolbar(){
+  const tb = $('#planToolbar');
+  const start = startOfWeek(planWeekAnchor);
+  const end = addDays(start,6);
+  tb.innerHTML = `
+    <button class="acctChip ${planViewMode==='week'?'active':''}" data-pv="week" type="button">Semaine</button>
+    <button class="acctChip ${planViewMode==='list'?'active':''}" data-pv="list" type="button">Liste</button>
+    ${planViewMode==='week' ? `<div class="acctNav">
+      <button class="iconBtn" id="planPrevWeek" type="button" aria-label="Semaine précédente">${icon('chevL')}</button>
+      <span class="acctPeriodLabel">${esc(weekLabel(start,end))}</span>
+      <button class="iconBtn" id="planNextWeek" type="button" aria-label="Semaine suivante">${icon('chevR')}</button>
+    </div>` : ''}`;
+  $$('.acctChip[data-pv]', tb).forEach(b=>b.addEventListener('click', ()=>{ planViewMode=b.dataset.pv; renderPlanning(); }));
+  const prevBtn=$('#planPrevWeek'); if(prevBtn) prevBtn.addEventListener('click', ()=>{ planWeekAnchor=addDays(planWeekAnchor,-7); renderPlanning(); });
+  const nextBtn=$('#planNextWeek'); if(nextBtn) nextBtn.addEventListener('click', ()=>{ planWeekAnchor=addDays(planWeekAnchor,7); renderPlanning(); });
+}
+function renderPlanningWeek(){
+  const wrap = $('#planWrap');
+  wrap.classList.remove('listMode');
+  const start = startOfWeek(planWeekAnchor);
+  const days = Array.from({length:7}, (_,i)=>addDays(start,i));
+  const todayStr = todayISO();
+  const byDay = {};
+  days.forEach(d=>byDay[isoDateLocal(d)]=[]);
+  [...clients.values()].filter(c=>c.nextVisitAt && byDay[c.nextVisitAt]).forEach(c=>byDay[c.nextVisitAt].push(c));
+  Object.values(byDay).forEach(list=>list.sort((a,b)=>(a.nextVisitTime||'').localeCompare(b.nextVisitTime||'')));
+ 
+  const slotsPerHour = 60/PLAN_SLOT_MIN;
+  const slotCount = (PLAN_END_HOUR-PLAN_START_HOUR)*slotsPerHour;
+  const slots = Array.from({length:slotCount}, (_,i)=>i);
+  const gridHeight = slotCount*PLAN_ROW_H;
+ 
+  const dayHeaders = days.map(d=>{
+    const isToday = isoDateLocal(d)===todayStr;
+    return `<div class="planDayHead${isToday?' today':''}">
+      <div class="planDayName">${WEEKDAY_SHORT[d.getDay()]}</div>
+      <div class="planDayNum">${d.getDate()}</div>
+    </div>`;
+  }).join('');
+ 
+  const timeGutter = slots.map(i=>{
+    const onHour = (i%slotsPerHour)===0;
+    const hh = PLAN_START_HOUR + Math.floor(i/slotsPerHour);
+    const mm = (i%slotsPerHour)*PLAN_SLOT_MIN;
+    const label = onHour ? `${String(hh).padStart(2,'0')}:00` : `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+    return `<div class="planHourLabel${onHour?' onHour':''}" style="height:${PLAN_ROW_H}px;">${label}</div>`;
+  }).join('');
+ 
+  const dayColumns = days.map(d=>{
+    const iso = isoDateLocal(d);
+    const isToday = iso===todayStr;
+    const items = byDay[iso];
+    const chips = items.map(c=>{
+      let top = 0, height = 26;
+      if(c.nextVisitTime){
+        const [hh,mm] = c.nextVisitTime.split(':').map(Number);
+        const startMin = hh*60+mm;
+        top = ((startMin - PLAN_START_HOUR*60) / PLAN_SLOT_MIN) * PLAN_ROW_H;
+        top = Math.max(0, Math.min(top, gridHeight-26));
+        if(c.nextVisitEndTime){
+          const [eh,em] = c.nextVisitEndTime.split(':').map(Number);
+          const endMin = eh*60+em;
+          if(endMin>startMin){
+            height = ((endMin-startMin)/PLAN_SLOT_MIN) * PLAN_ROW_H;
+            height = Math.max(20, Math.min(height, gridHeight-top));
+          }
+        }
+      }
+      const timeLabel = c.nextVisitTime ? (c.nextVisitEndTime ? `${c.nextVisitTime}–${c.nextVisitEndTime}` : c.nextVisitTime) : '—';
+      const tooltip = `${c.name}${c.address?' — '+c.address:''}${c.nextVisitType?' · '+c.nextVisitType:''}`;
+      return `<div class="planChip${isSub(c)?' sub':''}" data-id="${c.id}" style="top:${top}px;height:${height}px;" title="${esc(tooltip)}">
+        <span class="planChipTime">${esc(timeLabel)}</span>
+        <span class="planChipName">${esc(c.name)}</span>
+        ${c.nextVisitType && height>=40 ? `<span class="planChipType">${esc(c.nextVisitType)}</span>` : ''}
+      </div>`;
+    }).join('');
+    return `<div class="planDayCol${isToday?' today':''}" style="height:${gridHeight}px;">${chips}</div>`;
+  }).join('');
+ 
+  wrap.innerHTML = `
+    <div class="planWeekGridWrap">
+      <div class="planWeekHead">
+        <div class="planGutterHead"></div>
+        ${dayHeaders}
+      </div>
+      <div class="planWeekBody">
+        <div class="planGutter">${timeGutter}</div>
+        <div class="planDayCols">${dayColumns}</div>
+      </div>
+    </div>`;
+  $$('.planChip', wrap).forEach(el=>el.addEventListener('click', ()=>openProfile(el.dataset.id)));
+}
+function renderPlanningList(){
+  const wrap = $('#planWrap');
+  wrap.classList.add('listMode');
+  const items = [...clients.values()].filter(c=>c.nextVisitAt).sort((a,b)=>(a.nextVisitAt||'').localeCompare(b.nextVisitAt||''));
+  if(!items.length){
+    wrap.innerHTML = `<div class="emptyState" id="planEmpty" style="position:static;margin-top:10px;">
+      ${icon('calendar')}
+      <h2>Aucun rendez-vous programmé</h2>
+      <p>Programmez la prochaine visite d'un client pour la voir apparaître ici, avec son adresse.</p>
+      <button class="btnPrimary" id="planAddBtn">${icon('plus')} Programmer un rendez-vous</button>
+    </div>`;
+    $('#planAddBtn').addEventListener('click', ()=>openPlanningForm());
+    return;
+  }
+  let html='';
+  let lastKey=null;
+  items.forEach(c=>{
+    const d = daysUntil(c.nextVisitAt);
+    const late = d<0;
+    if(c.nextVisitAt!==lastKey){
+      const weekday = new Date(c.nextVisitAt+'T00:00:00').toLocaleDateString('fr-FR',{weekday:'long'});
+      let label;
+      if(late) label = `En retard · ${weekday} ${fmtDate(c.nextVisitAt)}`;
+      else if(d===0) label = `Aujourd'hui · ${fmtDate(c.nextVisitAt)}`;
+      else if(d===1) label = `Demain · ${fmtDate(c.nextVisitAt)}`;
+      else label = `${weekday} ${fmtDate(c.nextVisitAt)}`;
+      html += `<div class="planDateHeader${late?' late':''}">${esc(label)}</div>`;
+      lastKey = c.nextVisitAt;
+    }
+    const initials = (c.name||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    const addr = c.address || 'Adresse non renseignée';
+    const timeLabel = c.nextVisitTime ? (c.nextVisitEndTime?`${c.nextVisitTime}–${c.nextVisitEndTime}`:c.nextVisitTime) : '';
+    html += `<div class="planCard" data-id="${c.id}" role="button" tabindex="0">
+      <span class="avatar${isSub(c)?' sub':''}">${esc(initials)}</span>
+      <span class="info">
+        <span class="name">${timeLabel?`<span class="planTime">${esc(timeLabel)}</span> `:''}${esc(c.name)}</span>
+        <span class="addr">${esc(addr)}${c.nextVisitType?' · '+esc(c.nextVisitType):''}</span>
+      </span>
+      ${late?`<span class="badge late">En retard</span>`:''}
+    </div>`;
+  });
+  wrap.innerHTML = html;
+  $$('.planCard', wrap).forEach(b=>{
+    b.addEventListener('click', ()=>openProfile(b.dataset.id));
+    b.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openProfile(b.dataset.id); } });
+  });
+}
+function openPlanningForm(){
+  const items = [...clients.values()].sort((a,b)=>(a.name||'').localeCompare(b.name||'','fr'));
+  const options = items.map(c=>`<option value="${c.id}">${esc(c.name)}${c.nextVisitAt?' — déjà prévu le '+fmtDate(c.nextVisitAt):''}</option>`).join('');
+  const html = `
+    <div class="sheetHead"><h2>Programmer un rendez-vous</h2><div class="headBtns"><button class="iconBtn" id="closePlanFormBtn" type="button">${icon('close')}</button></div></div>
+    <div class="sheetBody">
+      ${items.length ? `
+      <form class="formGrid" id="planForm">
+        <div class="field"><label for="plan_client">Client</label>
+          <select id="plan_client" required>
+            <option value="" disabled selected>Choisir un client…</option>
+            ${options}
+          </select>
+        </div>
+        <div class="fieldRow">
+          <div class="field"><label for="plan_date">Date</label><input id="plan_date" type="date" value="${todayISO()}" required></div>
+          <div class="field"><label for="plan_time">Heure de début</label><input id="plan_time" type="time"></div>
+        </div>
+        <div class="fieldRow">
+          <div class="field"><label for="plan_endtime">Heure de fin</label><input id="plan_endtime" type="time"></div>
+          <div class="field"><label for="plan_type">Type d'intervention</label>
+            <input id="plan_type" list="intervention_suggestions" placeholder="ex. Tonte">
+          </div>
+        </div>
+        <datalist id="intervention_suggestions">
+          <option value="Tonte"><option value="Taille de haie"><option value="Désherbage">
+          <option value="Débroussaillage"><option value="Élagage"><option value="Plantation">
+          <option value="Entretien général"><option value="Nettoyage automnal"><option value="Traitement phytosanitaire">
+        </datalist>
+        <div class="btnRow" style="margin-top:6px;">
+          <button type="submit" class="btnPrimary">${icon('check')} Programmer</button>
+          <button type="button" class="btnGhost" id="cancelPlanFormBtn">Annuler</button>
+        </div>
+      </form>` : `<p style="color:var(--ink-dim);font-size:.88rem;">Ajoutez d'abord un client pour pouvoir lui programmer un rendez-vous.</p>`}
+    </div>`;
+  openModal(html);
+  $('#closePlanFormBtn').addEventListener('click', closeModal);
+  const cancelBtn = $('#cancelPlanFormBtn'); if(cancelBtn) cancelBtn.addEventListener('click', closeModal);
+  const form = $('#planForm');
+  if(form) form.addEventListener('submit', async e=>{
+    e.preventDefault();
+    const clientId = $('#plan_client').value;
+    const date = $('#plan_date').value;
+    const startTime = $('#plan_time').value || null;
+    const endTime = $('#plan_endtime').value || null;
+    if(!clientId || !date) return;
+    if(startTime && endTime && endTime<=startTime){ toast("L'heure de fin doit être après l'heure de début."); return; }
+    try{
+      await LocalDB.updateClient(clientId, {
+        nextVisitAt: date,
+        nextVisitTime: startTime,
+        nextVisitEndTime: endTime,
+        nextVisitType: $('#plan_type').value.trim() || null,
+      });
+      await reloadClients();
+      closeModal();
+      toast('Rendez-vous programmé.');
+      renderPlanning(); renderMarkers(); renderList();
+    }catch(err){ toast("Échec de l'enregistrement."); }
+  });
 }
 function showEmptyState(){
   if($('#emptyState')) return;
@@ -694,10 +1096,266 @@ function showEmptyState(){
   $$('#emptyAddBtn').forEach(b=>b.addEventListener('click', openClientForm));
 }
 function hideEmptyState(){ $$('#emptyState').forEach(e=>e.remove()); }
-
+ 
+/* ---------------- comptabilité ---------------- */
+function inAcctPeriod(dateStr){
+  if(!dateStr) return false;
+  const d = new Date(dateStr+'T00:00:00');
+  if(isNaN(d)) return false;
+  if(acctPeriod==='all') return true;
+  if(acctPeriod==='year') return d.getFullYear()===acctDate.getFullYear();
+  return d.getFullYear()===acctDate.getFullYear() && d.getMonth()===acctDate.getMonth();
+}
+function acctPeriodLabel(){
+  if(acctPeriod==='all') return 'Toutes périodes';
+  if(acctPeriod==='year') return String(acctDate.getFullYear());
+  return `${MOIS_LONG[acctDate.getMonth()]} ${acctDate.getFullYear()}`;
+}
+function acctShift(dir){
+  if(acctPeriod==='year') acctDate.setFullYear(acctDate.getFullYear()+dir);
+  else acctDate.setMonth(acctDate.getMonth()+dir);
+}
+function monthIndex(y,m){ return y*12+m; }
+function qualifyingMonthIndices(c){
+  if(c.tariffType!=='mensuel' || !c.tariffAmount) return [];
+  const start = c.createdAt ? new Date(c.createdAt) : new Date();
+  const startIdx = monthIndex(start.getFullYear(), start.getMonth());
+  const now = new Date();
+  const nowIdx = monthIndex(now.getFullYear(), now.getMonth());
+  let idxs;
+  if(acctPeriod==='month') idxs = [monthIndex(acctDate.getFullYear(), acctDate.getMonth())];
+  else if(acctPeriod==='year') idxs = Array.from({length:12}, (_,m)=>monthIndex(acctDate.getFullYear(), m));
+  else { idxs=[]; for(let i=startIdx;i<=nowIdx;i++) idxs.push(i); }
+  return idxs.filter(idx=>idx>=startIdx && idx<=nowIdx);
+}
+async function renderCompta(){
+  allVisitsCache = await LocalDB.getAllVisits().catch(()=>[]);
+  const tb = $('#acctToolbar');
+  tb.innerHTML = `
+    <button class="acctChip ${acctPeriod==='month'?'active':''}" data-p="month" type="button">Mois</button>
+    <button class="acctChip ${acctPeriod==='year'?'active':''}" data-p="year" type="button">Année</button>
+    <button class="acctChip ${acctPeriod==='all'?'active':''}" data-p="all" type="button">Tout</button>
+    ${acctPeriod!=='all' ? `<div class="acctNav">
+      <button class="iconBtn" id="acctPrev" type="button" aria-label="Période précédente">${icon('chevL')}</button>
+      <span class="acctPeriodLabel">${acctPeriodLabel()}</span>
+      <button class="iconBtn" id="acctNext" type="button" aria-label="Période suivante">${icon('chevR')}</button>
+    </div>` : ''}`;
+  $$('.acctChip', tb).forEach(b=>b.addEventListener('click', ()=>{ acctPeriod=b.dataset.p; renderCompta(); }));
+  $('#acctPrev')?.addEventListener('click', ()=>{ acctShift(-1); renderCompta(); });
+  $('#acctNext')?.addEventListener('click', ()=>{ acctShift(1); renderCompta(); });
+ 
+  const visits = allVisitsCache.filter(v=>v.montant && inAcctPeriod(v.date));
+  const totalFactureVisites = visits.reduce((s,v)=>s+(v.montant||0),0);
+  const unpaidVisits = visits.filter(v=>!v.paid).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  const totalImpaye = unpaidVisits.reduce((s,v)=>s+(v.montant||0),0);
+  const totalEncaisseVisites = totalFactureVisites - totalImpaye;
+ 
+  const subClients = [...clients.values()].filter(c=>c.tariffType==='mensuel' && c.tariffAmount);
+  const abonnementRows = subClients.map(c=>{
+    const idxs = qualifyingMonthIndices(c);
+    return {id:c.id, name:c.name, months:idxs.length, monthIdxs:idxs, unit:c.tariffAmount, total:idxs.length*c.tariffAmount};
+  }).filter(r=>r.months>0).sort((a,b)=>b.total-a.total);
+  const totalAbonnements = abonnementRows.reduce((s,r)=>s+r.total,0);
+  const abonnementPseudoVisits = abonnementRows.flatMap(r=>r.monthIdxs.map(idx=>({
+    date:`${Math.floor(idx/12)}-${String(idx%12+1).padStart(2,'0')}-01`,
+    clientId:r.id, montant:r.unit, paid:true, travaux:'Abonnement mensuel'
+  })));
+ 
+  const totalGeneral = totalFactureVisites + totalAbonnements;
+  const totalEncaisseGeneral = totalEncaisseVisites + totalAbonnements;
+ 
+  const revByClient = new Map();
+  visits.forEach(v=>revByClient.set(v.clientId, (revByClient.get(v.clientId)||0) + (v.montant||0)));
+  abonnementRows.forEach(r=>revByClient.set(r.id, (revByClient.get(r.id)||0) + r.total));
+  const revRows = [...revByClient.entries()]
+    .map(([cid,total])=>({name: clients.get(cid)?.name || 'Client supprimé', total, sub: clients.get(cid)?.tariffType==='mensuel'}))
+    .sort((a,b)=>b.total-a.total);
+ 
+  const unpaidHtml = unpaidVisits.length ? unpaidVisits.map(v=>{
+    const c = clients.get(v.clientId);
+    return `<div class="unpaidRow">
+      <div class="uInfo">
+        <div class="uName">${esc(c?.name||'Client supprimé')}</div>
+        <div class="uMeta">${fmtDate(v.date)}${v.travaux?' · '+esc(v.travaux):''}</div>
+      </div>
+      <div class="uAmount">${fmtEUR(v.montant)}</div>
+      <button class="payToggle unpaid acctPayBtn" data-vid="${v.id}" type="button">Marquer payé</button>
+    </div>`;
+  }).join('') : `<div class="muted" style="font-size:.85rem;padding:6px 0;">Aucun impayé sur cette période 🎉</div>`;
+ 
+  const subHtml = abonnementRows.length ? abonnementRows.map(r=>`
+    <div class="revRow"><span>${esc(r.name)} <span class="miniTag">${r.months} mois × ${fmtEUR(r.unit)}</span></span><span class="revAmount">${fmtEUR(r.total)}</span></div>
+  `).join('') : `<div class="muted" style="font-size:.85rem;padding:6px 0;">Aucun client en forfait mensuel sur cette période.</div>`;
+ 
+  const revHtml = revRows.length ? revRows.map(r=>`
+    <div class="revRow"><span>${esc(r.name)}${r.sub?' <span class="miniTag">Abonnement</span>':''}</span><span class="revAmount">${fmtEUR(r.total)}</span></div>
+  `).join('') : `<div class="muted" style="font-size:.85rem;padding:6px 0;">Aucune facturation sur cette période.</div>`;
+ 
+  $('#acctBody').innerHTML = `
+    <div class="statGrid">
+      <div class="statTile"><div class="statLabel">Total facturé</div><div class="statValue">${fmtEUR(totalGeneral)}</div></div>
+      <div class="statTile"><div class="statLabel">Abonnements mensuels</div><div class="statValue">${fmtEUR(totalAbonnements)}</div></div>
+      <div class="statTile ok"><div class="statLabel">Encaissé</div><div class="statValue">${fmtEUR(totalEncaisseGeneral)}</div></div>
+      <div class="statTile alert"><div class="statLabel">Impayé</div><div class="statValue">${fmtEUR(totalImpaye)}</div></div>
+      <div class="statTile"><div class="statLabel">Interventions</div><div class="statValue">${visits.length}</div></div>
+      <div class="statTile"><div class="statLabel">Clients abonnés</div><div class="statValue">${abonnementRows.length}</div></div>
+    </div>
+    <div class="section">
+      <div class="sectionTitle">Abonnements mensuels</div>
+      ${subHtml}
+    </div>
+    <div class="section">
+      <div class="sectionTitle">À encaisser (hors abonnements)</div>
+      ${unpaidHtml}
+    </div>
+    <div class="section">
+      <div class="sectionTitle">Par client</div>
+      ${revHtml}
+    </div>
+    <div class="btnRow" style="margin-top:6px;">
+      <button class="btnGhost" id="acctExportBtn" type="button">${icon('download')} Exporter en CSV</button>
+    </div>`;
+  $$('.acctPayBtn', $('#acctBody')).forEach(b=>b.addEventListener('click', async ()=>{
+    await LocalDB.updateVisit(b.dataset.vid, {paid:true});
+    toast('Marqué comme payé.');
+    if(openClientId) await reloadVisitsAndPhotos(openClientId);
+    renderCompta();
+  }));
+  $('#acctExportBtn').addEventListener('click', ()=>exportAccountingCSV([...visits, ...abonnementPseudoVisits]));
+}
+function csvEscape(v){
+  const s = String(v??'');
+  return /[;"\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
+}
+function exportAccountingCSV(visits){
+  const rows = [['Date','Client','Montant (EUR)','Payé','Travaux']];
+  [...visits].sort((a,b)=>(a.date||'').localeCompare(b.date||'')).forEach(v=>{
+    const c = clients.get(v.clientId);
+    rows.push([v.date||'', c?.name||'Client supprimé', v.montant!=null?String(v.montant).replace('.',','):'', v.paid?'Oui':'Non', v.travaux||'']);
+  });
+  const csv = rows.map(r=>r.map(csvEscape).join(';')).join('\r\n');
+  const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const label = acctPeriod==='all' ? 'tout' : acctPeriod==='year' ? String(acctDate.getFullYear()) : `${acctDate.getFullYear()}-${String(acctDate.getMonth()+1).padStart(2,'0')}`;
+  a.href = url; a.download = `comptabilite-carnet-de-jardins-${label}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 2000);
+}
+ 
+/* ---------------- matériel ---------------- */
+async function renderEquipment(){
+  equipmentCache = await LocalDB.getAllEquipment().catch(()=>[]);
+  const wrap = $('#equipWrap');
+  if(!equipmentCache.length){
+    wrap.innerHTML = `<div class="emptyState" id="equipEmpty" style="position:static;margin-top:10px;">
+      ${icon('wrench')}
+      <h2>Aucun matériel enregistré</h2>
+      <p>Ajoutez votre taille-haie, votre débroussailleuse, votre tronçonneuse… pour garder une trace de vos achats et locations.</p>
+      <button class="btnPrimary" id="equipAddBtn">${icon('plus')} Ajouter du matériel</button>
+    </div>`;
+    $('#equipAddBtn').addEventListener('click', ()=>openEquipmentForm());
+    return;
+  }
+  const items = [...equipmentCache].sort((a,b)=>(a.name||'').localeCompare(b.name||'','fr'));
+  const totalAchat = equipmentCache.filter(e=>e.mode==='achat').reduce((s,e)=>s+(e.price||0),0);
+  const totalLocation = equipmentCache.filter(e=>e.mode==='location').reduce((s,e)=>s+(e.price||0),0);
+  const summary = `<div class="equipSummary">${equipmentCache.length} matériel${equipmentCache.length>1?'s':''} enregistré${equipmentCache.length>1?'s':''} · ${fmtEUR(totalAchat)} en achats${totalLocation?` · ${fmtEUR(totalLocation)} en location`:''}</div>`;
+  wrap.innerHTML = summary + items.map(e=>{
+    const dateLabel = e.mode==='location' ? 'Loué le' : 'Acheté le';
+    return `<div class="equipCard" data-id="${e.id}" role="button" tabindex="0">
+      <span class="equipIconWrap">${icon('wrench')}</span>
+      <span class="info">
+        <span class="name">${esc(e.name)}</span>
+        <span class="sub">${e.mode==='location'?'Location':'Achat'} · ${e.date?dateLabel+' '+fmtDate(e.date):'date non renseignée'}</span>
+      </span>
+      <span class="equipPrice">${e.price!=null?fmtEUR(e.price):'—'}</span>
+      <button class="iconBtn eqDelBtn" data-id="${e.id}" type="button" aria-label="Supprimer">${icon('trash')}</button>
+    </div>`;
+  }).join('');
+  $$('.equipCard', wrap).forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const e = equipmentCache.find(x=>x.id===b.dataset.id);
+      if(e) openEquipmentForm(e);
+    });
+    b.addEventListener('keydown', ev=>{
+      if(ev.key==='Enter'||ev.key===' '){
+        ev.preventDefault();
+        const e = equipmentCache.find(x=>x.id===b.dataset.id);
+        if(e) openEquipmentForm(e);
+      }
+    });
+  });
+  $$('.eqDelBtn', wrap).forEach(b=>b.addEventListener('click', async ev=>{
+    ev.stopPropagation();
+    try{
+      await LocalDB.deleteEquipment(b.dataset.id);
+      toast('Matériel supprimé.');
+      renderEquipment();
+    }catch(err){ toast('Échec de la suppression.'); }
+  }));
+}
+function openEquipmentForm(existing){
+  const e = existing || {};
+  const html = `
+    <div class="sheetHead"><h2>${existing?'Modifier le matériel':'Nouveau matériel'}</h2><div class="headBtns"><button class="iconBtn" id="closeEqFormBtn" type="button">${icon('close')}</button></div></div>
+    <div class="sheetBody">
+      <form class="formGrid" id="equipForm">
+        <div class="field"><label for="eq_name">Nom</label><input id="eq_name" required value="${esc(e.name||'')}" list="eq_suggestions" placeholder="ex. Taille-haie"></div>
+        <datalist id="eq_suggestions">
+          <option value="Tondeuse"><option value="Débroussailleuse"><option value="Taille-haie">
+          <option value="Tronçonneuse"><option value="Souffleur"><option value="Scarificateur">
+          <option value="Motobineuse"><option value="Broyeur de végétaux"><option value="Remorque">
+        </datalist>
+        <div class="fieldRow">
+          <div class="field"><label for="eq_mode">Type</label>
+            <select id="eq_mode">
+              <option value="achat" ${e.mode!=='location'?'selected':''}>Achat</option>
+              <option value="location" ${e.mode==='location'?'selected':''}>Location</option>
+            </select>
+          </div>
+          <div class="field"><label for="eq_price">Prix (€)</label><input id="eq_price" type="number" min="0" step="0.5" value="${e.price??''}"></div>
+        </div>
+        <div class="field"><label for="eq_date" id="eq_dateLabel">${e.mode==='location'?'Date de location':"Date d'achat"}</label><input id="eq_date" type="date" value="${e.date||''}"></div>
+        <div class="field"><label for="eq_notes">Notes</label><textarea id="eq_notes" placeholder="Référence, fournisseur, garantie…">${esc(e.notes||'')}</textarea></div>
+        <div class="btnRow" style="margin-top:6px;">
+          <button type="submit" class="btnPrimary">${icon('check')} Enregistrer</button>
+          <button type="button" class="btnGhost" id="cancelEqFormBtn">Annuler</button>
+        </div>
+      </form>
+    </div>`;
+  openModal(html);
+  $('#closeEqFormBtn').addEventListener('click', closeModal);
+  $('#cancelEqFormBtn').addEventListener('click', closeModal);
+  $('#eq_mode').addEventListener('change', ()=>{ $('#eq_dateLabel').textContent = $('#eq_mode').value==='location' ? 'Date de location' : "Date d'achat"; });
+  $('#equipForm').addEventListener('submit', async ev=>{
+    ev.preventDefault();
+    const name = $('#eq_name').value.trim();
+    if(!name) return;
+    const data = {
+      name,
+      mode: $('#eq_mode').value,
+      price: $('#eq_price').value ? Number($('#eq_price').value) : null,
+      date: $('#eq_date').value || null,
+      notes: $('#eq_notes').value.trim(),
+    };
+    try{
+      if(existing) await LocalDB.updateEquipment(existing.id, data);
+      else await LocalDB.addEquipment(data);
+      closeModal();
+      toast(existing?'Matériel modifié.':'Matériel ajouté.');
+      renderEquipment();
+    }catch(err){ toast("Échec de l'enregistrement."); }
+  });
+}
+ 
 /* ---------------- FAB ---------------- */
-function bindFab(){ $('#fabAdd').addEventListener('click', ()=>openClientForm()); }
-
+function bindFab(){ $('#fabAdd').addEventListener('click', ()=>{
+  if(currentView==='materiel') openEquipmentForm();
+  else if(currentView==='planning') openPlanningForm();
+  else openClientForm();
+}); }
+ 
 /* ---------------- modal helpers ---------------- */
 function openModal(html){
   const root=$('#modalRoot');
@@ -706,7 +1364,7 @@ function openModal(html){
   return root;
 }
 function closeModal(){ $('#modalRoot').innerHTML=''; }
-
+ 
 /* ---------------- client profile sheet ---------------- */
 async function openProfile(id){
   openClientId=id;
@@ -716,7 +1374,7 @@ async function openProfile(id){
   if(openClientId===id) renderSheetContent();
 }
 function closeSheet(){ openClientId=null; closeModal(); }
-
+ 
 function renderSheetContent(){
   const c = clients.get(openClientId);
   if(!c){ closeSheet(); return; }
@@ -730,31 +1388,35 @@ function renderSheetContent(){
   } else {
     posLine = `<span class="muted">Pas encore positionné sur la carte.</span>`;
   }
-
+ 
   const contact = `<div class="contactRow">
     ${c.phone?`<a class="pillLink" href="tel:${esc(c.phone)}">${icon('phone')}${esc(c.phone)}</a>`:''}
     ${c.email?`<a class="pillLink" href="mailto:${esc(c.email)}">${icon('mail')}${esc(c.email)}</a>`:''}
   </div>`;
-
+ 
   const gardenBits = [c.gardenType, c.surface?`${c.surface}`:null].filter(Boolean).join(' · ');
   const tarifText = c.tariffType==='horaire' ? (c.tariffAmount?`${fmtEUR(c.tariffAmount)} / heure`:'Tarif horaire') :
-                    c.tariffType==='forfait' ? (c.tariffAmount?`Forfait ${fmtEUR(c.tariffAmount)}`:'Forfait') : '';
-
+                    c.tariffType==='forfait' ? (c.tariffAmount?`Forfait ${fmtEUR(c.tariffAmount)}`:'Forfait') :
+                    c.tariffType==='mensuel' ? (c.tariffAmount?`${fmtEUR(c.tariffAmount)} / mois (abonnement)`:'Forfait mensuel') : '';
+ 
   const photosHtml = currentPhotos.map(p=>`<img class="photoThumb" src="${p.dataUrl}" data-full="${p.dataUrl}">`).join('');
-
+ 
   const lastLine = c.lastVisitAt
     ? `<div class="lastVisitBanner">${icon('check')} Dernier passage : <strong>${fmtDate(c.lastVisitAt)}</strong> (${relDays(c.lastVisitAt)}) · ${currentVisits.length} passage${currentVisits.length>1?'s':''} enregistré${currentVisits.length>1?'s':''}</div>`
     : `<div class="lastVisitBanner">Aucun passage enregistré pour l'instant.</div>`;
-
+  const nvTimeRange = c.nextVisitTime ? ` à ${c.nextVisitTime}${c.nextVisitEndTime?'–'+c.nextVisitEndTime:''}` : '';
+  const nextLine = c.nextVisitAt
+    ? `<div class="lastVisitBanner${isRdvSoon(c)?' soonText':''}">${icon('pin')} Prochain rendez-vous : <strong>${fmtDate(c.nextVisitAt)}${nvTimeRange}</strong> (${relDays(c.nextVisitAt)})${c.nextVisitType?' · '+esc(c.nextVisitType):''}</div>` : '';
+ 
   const visitsHtml = currentVisits.map(v=>`
     <div class="visitItem">
       <button class="vDel" data-vid="${v.id}" title="Supprimer ce passage">${icon('trash')}</button>
       <div class="vDate">${fmtDate(v.date)}</div>
-      <div class="vMeta">${[v.duree, v.montant?fmtEUR(v.montant):null].filter(Boolean).join(' · ')}</div>
+      <div class="vMeta">${[v.duree, v.montant?fmtEUR(v.montant):null].filter(Boolean).join(' · ')}${v.montant?`<button class="payToggle ${v.paid?'paid':'unpaid'} vPayBtn" data-vid="${v.id}" type="button">${v.paid?'Payé':'Impayé'}</button>`:''}</div>
       ${v.travaux?`<div class="vTasks">${esc(v.travaux)}</div>`:''}
       ${v.remarques?`<div class="vTasks muted">${esc(v.remarques)}</div>`:''}
     </div>`).join('') || `<div class="muted" style="font-size:.85rem;">—</div>`;
-
+ 
   const html = `
     <div class="sheetHead">
       <h2>${esc(c.name)}</h2>
@@ -795,6 +1457,7 @@ function renderSheetContent(){
       <div class="section">
         <div class="sectionTitle">Interventions</div>
         ${lastLine}
+        ${nextLine}
         <div class="visitList">${visitsHtml}</div>
         <div class="btnRow"><button class="btnPrimary" id="addVisitBtn">${icon('plus')} Ajouter un passage</button></div>
       </div>
@@ -811,6 +1474,13 @@ function renderSheetContent(){
   $('#photoInput').addEventListener('change', e=>handlePhotoUpload(c.id, e.target.files));
   $$('.photoThumb').forEach(img=>img.addEventListener('click', ()=>openLightbox(img.dataset.full)));
   $$('.vDel').forEach(b=>b.addEventListener('click', ()=>deleteVisit(c.id, b.dataset.vid)));
+  $$('.vPayBtn').forEach(b=>b.addEventListener('click', async ()=>{
+    const v = currentVisits.find(x=>x.id===b.dataset.vid);
+    if(!v) return;
+    await LocalDB.updateVisit(v.id, {paid: !v.paid});
+    await reloadVisitsAndPhotos(c.id);
+    renderSheetContent();
+  }));
 }
 function openLightbox(src){
   const wrap=document.createElement('div'); wrap.className='lightbox';
@@ -871,7 +1541,7 @@ async function deleteVisit(clientId, visitId){
     renderMarkers(); renderList(); renderSheetContent();
   }catch(e){ toast('Échec de la suppression.'); }
 }
-
+ 
 /* ---------------- forms: client ---------------- */
 function openClientForm(existing){
   const c = existing || {};
@@ -898,12 +1568,28 @@ function openClientForm(existing){
           <div class="field"><label for="f_ttype">Tarif</label>
             <select id="f_ttype">
               <option value="" ${!c.tariffType?'selected':''}>Non défini</option>
-              <option value="horaire" ${c.tariffType==='horaire'?'selected':''}>Horaire</option>
-              <option value="forfait" ${c.tariffType==='forfait'?'selected':''}>Forfait</option>
+              <option value="horaire" ${c.tariffType==='horaire'?'selected':''}>À l'heure</option>
+              <option value="forfait" ${c.tariffType==='forfait'?'selected':''}>Forfait par intervention</option>
+              <option value="mensuel" ${c.tariffType==='mensuel'?'selected':''}>Forfait mensuel (abonnement)</option>
             </select>
           </div>
           <div class="field"><label for="f_tamount">Montant (€)</label><input id="f_tamount" type="number" min="0" step="0.5" value="${c.tariffAmount??''}"></div>
         </div>
+        <div class="fieldRow">
+          <div class="field"><label for="f_nextvisit">Prochain rendez-vous</label><input id="f_nextvisit" type="date" value="${c.nextVisitAt||''}"></div>
+          <div class="field"><label for="f_nextvisittime">Heure de début</label><input id="f_nextvisittime" type="time" value="${c.nextVisitTime||''}"></div>
+        </div>
+        <div class="fieldRow">
+          <div class="field"><label for="f_nextvisitend">Heure de fin</label><input id="f_nextvisitend" type="time" value="${c.nextVisitEndTime||''}"></div>
+          <div class="field"><label for="f_nextvisittype">Type d'intervention</label>
+            <input id="f_nextvisittype" list="intervention_suggestions" value="${esc(c.nextVisitType||'')}" placeholder="ex. Tonte">
+          </div>
+        </div>
+        <datalist id="intervention_suggestions">
+          <option value="Tonte"><option value="Taille de haie"><option value="Désherbage">
+          <option value="Débroussaillage"><option value="Élagage"><option value="Plantation">
+          <option value="Entretien général"><option value="Nettoyage automnal"><option value="Traitement phytosanitaire">
+        </datalist>
         ${!existing?`<div class="field">
           <label>Position</label>
           <div class="posChoice">
@@ -922,7 +1608,7 @@ function openClientForm(existing){
   $('#closeFormBtn').addEventListener('click', ()=> existing?renderSheetContent():closeModal());
   $('#cancelFormBtn').addEventListener('click', ()=> existing?renderSheetContent():closeModal());
   let capturedPos=null;
-
+ 
   const gpsBtn = $('#f_gps');
   if(gpsBtn) gpsBtn.addEventListener('click', ()=>{
     if(!navigator.geolocation){ toast('Géolocalisation indisponible.'); return; }
@@ -949,11 +1635,13 @@ function openClientForm(existing){
       toast('Adresse trouvée.');
     }catch(e){ geoBtn.innerHTML = icon('pin')+' Localiser'; toast('Recherche impossible (connexion internet ?).'); }
   });
-
+ 
   $('#clientForm').addEventListener('submit', async e=>{
     e.preventDefault();
     const name = $('#f_name').value.trim();
     if(!name){ toast('Le nom est obligatoire.'); return; }
+    const nvStart = $('#f_nextvisittime').value, nvEnd = $('#f_nextvisitend').value;
+    if(nvStart && nvEnd && nvEnd<=nvStart){ toast("L'heure de fin doit être après l'heure de début."); return; }
     const data = {
       name,
       phone: $('#f_phone').value.trim(),
@@ -964,6 +1652,10 @@ function openClientForm(existing){
       notes: $('#f_notes').value.trim(),
       tariffType: $('#f_ttype').value,
       tariffAmount: $('#f_tamount').value ? Number($('#f_tamount').value) : null,
+      nextVisitAt: $('#f_nextvisit').value || null,
+      nextVisitTime: $('#f_nextvisittime').value || null,
+      nextVisitEndTime: $('#f_nextvisitend').value || null,
+      nextVisitType: $('#f_nextvisittype').value.trim() || null,
     };
     try{
       if(existing){
@@ -984,7 +1676,7 @@ function openClientForm(existing){
     }catch(err){ toast("Échec de l'enregistrement."); }
   });
 }
-
+ 
 /* ---------------- forms: visit ---------------- */
 function openVisitForm(clientId){
   const html = `
@@ -998,6 +1690,10 @@ function openVisitForm(clientId){
         <div class="field"><label for="v_travaux">Travaux effectués</label><textarea id="v_travaux" placeholder="Tonte, taille des haies, désherbage…"></textarea></div>
         <div class="fieldRow">
           <div class="field"><label for="v_montant">Montant facturé (€)</label><input id="v_montant" type="number" min="0" step="0.5"></div>
+        </div>
+        <div class="field" style="flex-direction:row;align-items:center;gap:8px;">
+          <input id="v_paid" type="checkbox" style="width:auto;">
+          <label for="v_paid" style="margin:0;">Déjà payé (réglé sur place)</label>
         </div>
         <div class="field"><label for="v_remarques">Remarques</label><textarea id="v_remarques" placeholder="Points à surveiller au prochain passage…"></textarea></div>
         <div class="btnRow" style="margin-top:6px;">
@@ -1015,6 +1711,7 @@ function openVisitForm(clientId){
     const visit = {
       date, duree: $('#v_duree').value.trim(), travaux: $('#v_travaux').value.trim(),
       montant: $('#v_montant').value ? Number($('#v_montant').value) : null,
+      paid: $('#v_paid').checked,
       remarques: $('#v_remarques').value.trim(), createdAt: Date.now()
     };
     try{
@@ -1028,7 +1725,7 @@ function openVisitForm(clientId){
     }catch(err){ toast("Échec de l'enregistrement."); }
   });
 }
-
+ 
 /* ---------------- photos ---------------- */
 function compressImage(file){
   return new Promise((resolve,reject)=>{
@@ -1061,7 +1758,7 @@ async function handlePhotoUpload(clientId, files){
   }catch(err){ toast("Échec de l'ajout de la photo."); }
   const input = $('#photoInput'); if(input) input.value='';
 }
-
+ 
 /* ---------------- export / import ---------------- */
 async function exportData(){
   try{
@@ -1086,8 +1783,9 @@ async function importData(file){
     toast('Sauvegarde importée.');
   }catch(err){ toast("Fichier de sauvegarde invalide."); }
 }
-
+ 
 })();
 </script>
 </body>
 </html>
+ 
