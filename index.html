@@ -188,9 +188,17 @@
   .payToggle.unpaid{background:var(--clay-light);color:var(--clay);}
   .vMeta .payToggle{margin-left:8px;padding:2px 9px;font-size:.68rem;vertical-align:middle;}
   .miniTag{display:inline-block;background:var(--gold-light);color:var(--gold);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:999px;vertical-align:middle;white-space:nowrap;}
+  .acctTabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .tableWrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -2px;}
+  .acctTable{width:100%;border-collapse:collapse;font-size:.83rem;}
+  .acctTable th{text-align:left;font-size:.66rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-dim);padding:0 12px 7px 2px;border-bottom:1px solid var(--line);white-space:nowrap;}
+  .acctTable td{padding:9px 12px 9px 2px;border-bottom:1px solid var(--line);vertical-align:top;min-width:90px;}
+  .acctTable tr:last-child td{border-bottom:none;}
+  .acctTable td.acctAmount{font-family:var(--font-m);font-weight:700;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;min-width:auto;}
+  .acctTable th.acctAmountH{text-align:right;}
   .clientCard{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:12px 13px;cursor:pointer;text-align:left;}
   .clientCard:hover{border-color:var(--moss);}
-  .clientCard .avatar{width:38px;height:38px;border-radius:50%;background:var(--moss-light);color:var(--moss-dark);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:600;flex:none;font-size:1rem;}
+  .clientCard .avatar{width:38px;height:38px;border-radius:50%;background:var(--moss-light);color:var(--moss-dark);display:flex;align-items:center;justify-content:center;font-family:var(--font-b);font-weight:700;flex:none;font-size:.92rem;line-height:1;text-align:center;}
   .clientCard .avatar.warn{background:var(--gold-light);color:var(--gold);}
   .clientCard .avatar.alert{background:var(--clay-light);color:var(--clay);}
   .clientCard .avatar.none{background:var(--surface-2);color:var(--ink-dim);}
@@ -216,7 +224,7 @@
   .planDateHeader:first-child{padding-top:2px;}
   .planDateHeader.late{color:var(--clay);}
   .planCard{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:12px 13px;cursor:pointer;text-align:left;}
-  .planCard .avatar{width:38px;height:38px;border-radius:50%;background:var(--moss-light);color:var(--moss-dark);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:600;flex:none;font-size:1rem;}
+  .planCard .avatar{width:38px;height:38px;border-radius:50%;background:var(--moss-light);color:var(--moss-dark);display:flex;align-items:center;justify-content:center;font-family:var(--font-b);font-weight:700;flex:none;font-size:.92rem;line-height:1;text-align:center;}
   .planCard .avatar.sub{background:var(--gold-light);color:var(--gold);}
   .planCard .info{flex:1;min-width:0;}
   .planCard .name{display:block;font-weight:600;font-size:.94rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -242,6 +250,7 @@
   .planChipTime{display:block;font-weight:700;font-family:var(--font-m);}
   .planChipName{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .planChipType{display:block;font-size:.56rem;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .planChipNote{display:block;font-size:.56rem;opacity:.75;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .badge{font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:999px;flex:none;white-space:nowrap;}
   .badge.ok{background:var(--moss-light);color:var(--moss-dark);}
   .badge.warn{background:var(--gold-light);color:var(--gold);}
@@ -466,7 +475,7 @@
 (function(){
 "use strict";
 
-const APP_VERSION = "2026-09-13-3";
+const APP_VERSION = "2026-09-13-9";
 
 /* ---------------- utilities ---------------- */
 const $  = (s,r=document)=>r.querySelector(s);
@@ -558,6 +567,13 @@ function fmtDistance(m){
   return `${(m/1000).toLocaleString('fr-FR',{maximumFractionDigits:1})} km`;
 }
 function fmtEUR(n){ return Number(n).toLocaleString('fr-FR',{maximumFractionDigits:2})+' €'; }
+function fmtNom(name){ return (name||'').toLocaleUpperCase('fr-FR'); }
+function fmtPrenom(firstName){ return (firstName||'').toLocaleLowerCase('fr-FR'); }
+function fmtFullName(c){
+  const nom = fmtNom(c&&c.name);
+  const prenom = fmtPrenom(c&&c.firstName);
+  return prenom ? `${nom} ${prenom}` : nom;
+}
 function gmapsUrl(c){
   if(c.lat!=null && c.lng!=null) return `https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lng}`;
   if(c.address) return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address)}`;
@@ -751,6 +767,39 @@ const LocalDB = (function(){
       return rec;
     },
     async deleteVisit(clientId, visitId){ await tx('visits','readwrite', s=>reqp(s.delete(visitId))); CloudSync.pushDelete('visits', visitId); },
+    async ensureSubscriptionCharges(){
+      // Pour chaque client en forfait mensuel, crée automatiquement (une seule fois) une ligne de
+      // paiement "Abonnement mensuel" pour chaque mois écoulé depuis sa création jusqu'au mois en
+      // cours, marquée non payée par défaut. Ces lignes vivent dans le store 'visits' (comme les
+      // passages classiques) mais portent isSubscription:true pour être filtrées de l'historique
+      // des passages et repérées dans la comptabilité.
+      const allClients = await tx('clients','readonly', s=>reqp(s.getAll()));
+      const allVisits = await tx('visits','readonly', s=>reqp(s.getAll()));
+      const existingKeys = new Set(allVisits.filter(v=>v.isSubscription).map(v=>v.clientId+'|'+v.subMonth));
+      const now = new Date();
+      const nowIdx = now.getFullYear()*12+now.getMonth();
+      const toAdd = [];
+      for(const c of allClients){
+        if(c.tariffType!=='mensuel' || !c.tariffAmount) continue;
+        const start = c.createdAt ? new Date(c.createdAt) : now;
+        const startIdx = start.getFullYear()*12+start.getMonth();
+        for(let idx=startIdx; idx<=nowIdx; idx++){
+          const y = Math.floor(idx/12), m = idx%12;
+          const subMonth = `${y}-${String(m+1).padStart(2,'0')}`;
+          if(existingKeys.has(c.id+'|'+subMonth)) continue;
+          toAdd.push({clientId:c.id, date:`${subMonth}-01`, montant:c.tariffAmount, paid:false, travaux:'Abonnement mensuel', isSubscription:true, subMonth});
+        }
+      }
+      if(!toAdd.length) return;
+      await tx('visits','readwrite', async s=>{
+        for(const item of toAdd){
+          const id = uid();
+          const rec = {id, ...item};
+          await reqp(s.add(rec));
+          CloudSync.push('visits', id, rec);
+        }
+      });
+    },
     async getPhotos(clientId){ return tx('photos','readonly', s=>reqp(s.index('clientId').getAll(clientId))); },
     async addPhoto(clientId, dataUrl){ const id=uid(); await tx('photos','readwrite', s=>reqp(s.add({id, clientId, dataUrl, takenAt:Date.now()}))); return id; },
     async getAllEquipment(){ return tx('equipment','readonly', s=>reqp(s.getAll())); },
@@ -825,6 +874,7 @@ let myLocation=null;
 let map, markersLayer, meMarker;
 let acctPeriod='month';
 let acctDate=new Date();
+let acctTab='abonnements';
 let allVisitsCache=[];
 let listFilter='all';
 let equipmentCache=[];
@@ -837,7 +887,7 @@ async function reloadClients(){
   list.forEach(c=>clients.set(c.id,c));
 }
 async function reloadVisitsAndPhotos(id){
-  currentVisits = (await LocalDB.getVisits(id)).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  currentVisits = (await LocalDB.getVisits(id)).filter(v=>!v.isSubscription).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   currentPhotos = (await LocalDB.getPhotos(id)).sort((a,b)=>(b.takenAt||0)-(a.takenAt||0));
 }
 
@@ -852,6 +902,7 @@ async function init(){
   try{ initMap(); }catch(e){ mapOk = false; showMapUnavailable(); }
   try{
     await LocalDB.repairOrphans().catch(err=>console.error('repairOrphans failed', err));
+    await LocalDB.ensureSubscriptionCharges().catch(err=>console.error('ensureSubscriptionCharges failed', err));
     await reloadClients();
   }catch(e){
     $('#mapView').classList.remove('active');
@@ -1047,7 +1098,7 @@ function renderMarkers(){
   if(!markersLayer){ renderMapOverlay(); refreshEmptyState(); return; }
   markersLayer.clearLayers();
   [...clients.values()].filter(c=>c.lat!=null&&c.lng!=null).forEach(c=>{
-    const divIcon = L.divIcon({className:'', html:`<div class="leafletPin ${pinClass(c)}${isSub(c)?' sub':''}"><span class="dot"></span><span class="label">${esc(c.name)}</span></div>`, iconSize:[16,16], iconAnchor:[8,8]});
+    const divIcon = L.divIcon({className:'', html:`<div class="leafletPin ${pinClass(c)}${isSub(c)?' sub':''}"><span class="dot"></span><span class="label">${esc(fmtFullName(c))}</span></div>`, iconSize:[16,16], iconAnchor:[8,8]});
     const m = L.marker([c.lat,c.lng], {icon:divIcon}).addTo(markersLayer);
     m.on('click', ()=>{ if(!placingForClientId) openProfile(c.id); });
   });
@@ -1141,7 +1192,7 @@ function renderList(){
     return `<div class="clientCard" data-id="${c.id}" role="button" tabindex="0">
       <span class="avatar ${rec}${isSub(c)?' sub':''}">${esc(initials)}</span>
       <span class="info">
-        <span class="name">${esc(c.name)}</span>
+        <span class="name">${esc(fmtFullName(c))}</span>
         <span class="sub">${esc(posNote)}</span>
       </span>
       ${gm?`<a class="iconBtn gmapsBtn" href="${gm}" target="_blank" rel="noopener" aria-label="Ouvrir dans Google Maps" title="Ouvrir dans Google Maps">${icon('external')}</a>`:''}
@@ -1231,11 +1282,19 @@ function renderPlanningWeek(){
         }
       }
       const timeLabel = c.nextVisitTime ? (c.nextVisitEndTime ? `${c.nextVisitTime}–${c.nextVisitEndTime}` : c.nextVisitTime) : '—';
-      const tooltip = `${c.name}${c.address?' — '+c.address:''}${c.nextVisitType?' · '+c.nextVisitType:''}`;
+      const tooltip = `${fmtFullName(c)}${c.address?' — '+c.address:''}${c.nextVisitType?' · '+c.nextVisitType:''}${c.nextVisitNote?' — '+c.nextVisitNote:''}`;
+      let extraHtml = '';
+      if(height>=55){
+        if(c.nextVisitType) extraHtml += `<span class="planChipType">${esc(c.nextVisitType)}</span>`;
+        if(c.nextVisitNote) extraHtml += `<span class="planChipNote">${esc(c.nextVisitNote)}</span>`;
+      } else if(height>=40){
+        const line = c.nextVisitNote || c.nextVisitType;
+        if(line) extraHtml += `<span class="planChipType">${esc(line)}</span>`;
+      }
       return `<div class="planChip${isSub(c)?' sub':''}" data-id="${c.id}" style="top:${top}px;height:${height}px;" title="${esc(tooltip)}">
         <span class="planChipTime">${esc(timeLabel)}</span>
-        <span class="planChipName">${esc(c.name)}</span>
-        ${c.nextVisitType && height>=40 ? `<span class="planChipType">${esc(c.nextVisitType)}</span>` : ''}
+        <span class="planChipName">${esc(fmtFullName(c))}</span>
+        ${extraHtml}
       </div>`;
     }).join('');
     return `<div class="planDayCol${isToday?' today':''}" style="height:${gridHeight}px;">${chips}</div>`;
@@ -1289,8 +1348,9 @@ function renderPlanningList(){
     html += `<div class="planCard" data-id="${c.id}" role="button" tabindex="0">
       <span class="avatar${isSub(c)?' sub':''}">${esc(initials)}</span>
       <span class="info">
-        <span class="name">${timeLabel?`<span class="planTime">${esc(timeLabel)}</span> `:''}${esc(c.name)}</span>
+        <span class="name">${timeLabel?`<span class="planTime">${esc(timeLabel)}</span> `:''}${esc(fmtFullName(c))}</span>
         <span class="addr">${esc(addr)}${c.nextVisitType?' · '+esc(c.nextVisitType):''}</span>
+        ${c.nextVisitNote?`<span class="addr" style="display:block;font-style:italic;">${esc(c.nextVisitNote)}</span>`:''}
       </span>
       ${late?`<span class="badge late">En retard</span>`:''}
     </div>`;
@@ -1303,7 +1363,7 @@ function renderPlanningList(){
 }
 function openPlanningForm(){
   const items = [...clients.values()].sort((a,b)=>(a.name||'').localeCompare(b.name||'','fr'));
-  const options = items.map(c=>`<option value="${c.id}">${esc(c.name)}${c.nextVisitAt?' — déjà prévu le '+fmtDate(c.nextVisitAt):''}</option>`).join('');
+  const options = items.map(c=>`<option value="${c.id}">${esc(fmtFullName(c))}${c.nextVisitAt?' — déjà prévu le '+fmtDate(c.nextVisitAt):''}</option>`).join('');
   const html = `
     <div class="sheetHead"><h2>Programmer un rendez-vous</h2><div class="headBtns"><button class="iconBtn" id="closePlanFormBtn" type="button">${icon('close')}</button></div></div>
     <div class="sheetBody">
@@ -1325,6 +1385,7 @@ function openPlanningForm(){
             <input id="plan_type" list="intervention_suggestions" placeholder="ex. Tonte">
           </div>
         </div>
+        <div class="field"><label for="plan_note">Commentaire</label><textarea id="plan_note" placeholder="ex. Prévoir l'échelle, portail code 1234…"></textarea></div>
         <datalist id="intervention_suggestions">
           <option value="Tonte"><option value="Taille de haie"><option value="Désherbage">
           <option value="Débroussaillage"><option value="Élagage"><option value="Plantation">
@@ -1354,6 +1415,7 @@ function openPlanningForm(){
         nextVisitTime: startTime,
         nextVisitEndTime: endTime,
         nextVisitType: $('#plan_type').value.trim() || null,
+        nextVisitNote: $('#plan_note').value.trim() || null,
       });
       await reloadClients();
       closeModal();
@@ -1392,20 +1454,13 @@ function acctShift(dir){
   if(acctPeriod==='year') acctDate.setFullYear(acctDate.getFullYear()+dir);
   else acctDate.setMonth(acctDate.getMonth()+dir);
 }
-function monthIndex(y,m){ return y*12+m; }
-function qualifyingMonthIndices(c){
-  if(c.tariffType!=='mensuel' || !c.tariffAmount) return [];
-  const start = c.createdAt ? new Date(c.createdAt) : new Date();
-  const startIdx = monthIndex(start.getFullYear(), start.getMonth());
-  const now = new Date();
-  const nowIdx = monthIndex(now.getFullYear(), now.getMonth());
-  let idxs;
-  if(acctPeriod==='month') idxs = [monthIndex(acctDate.getFullYear(), acctDate.getMonth())];
-  else if(acctPeriod==='year') idxs = Array.from({length:12}, (_,m)=>monthIndex(acctDate.getFullYear(), m));
-  else { idxs=[]; for(let i=startIdx;i<=nowIdx;i++) idxs.push(i); }
-  return idxs.filter(idx=>idx>=startIdx && idx<=nowIdx);
+function fmtMonthLabel(subMonth){
+  if(!subMonth) return '';
+  const [y,m] = subMonth.split('-').map(Number);
+  return `${MOIS_LONG[m-1]} ${y}`;
 }
 async function renderCompta(){
+  await LocalDB.ensureSubscriptionCharges().catch(err=>console.error('ensureSubscriptionCharges failed', err));
   allVisitsCache = await LocalDB.getAllVisits().catch(()=>[]);
   const tb = $('#acctToolbar');
   tb.innerHTML = `
@@ -1422,83 +1477,98 @@ async function renderCompta(){
   $('#acctNext')?.addEventListener('click', ()=>{ acctShift(1); renderCompta(); });
 
   const visits = allVisitsCache.filter(v=>v.montant && inAcctPeriod(v.date));
-  const totalFactureVisites = visits.reduce((s,v)=>s+(v.montant||0),0);
+  const totalFacture = visits.reduce((s,v)=>s+(v.montant||0),0);
   const unpaidVisits = visits.filter(v=>!v.paid).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
   const totalImpaye = unpaidVisits.reduce((s,v)=>s+(v.montant||0),0);
-  const totalEncaisseVisites = totalFactureVisites - totalImpaye;
+  const totalEncaisse = totalFacture - totalImpaye;
 
-  const subClients = [...clients.values()].filter(c=>c.tariffType==='mensuel' && c.tariffAmount);
-  const abonnementRows = subClients.map(c=>{
-    const idxs = qualifyingMonthIndices(c);
-    return {id:c.id, name:c.name, months:idxs.length, monthIdxs:idxs, unit:c.tariffAmount, total:idxs.length*c.tariffAmount};
-  }).filter(r=>r.months>0).sort((a,b)=>b.total-a.total);
-  const totalAbonnements = abonnementRows.reduce((s,r)=>s+r.total,0);
-  const abonnementPseudoVisits = abonnementRows.flatMap(r=>r.monthIdxs.map(idx=>({
-    date:`${Math.floor(idx/12)}-${String(idx%12+1).padStart(2,'0')}-01`,
-    clientId:r.id, montant:r.unit, paid:true, travaux:'Abonnement mensuel'
-  })));
-
-  const totalGeneral = totalFactureVisites + totalAbonnements;
-  const totalEncaisseGeneral = totalEncaisseVisites + totalAbonnements;
+  const subVisits = visits.filter(v=>v.isSubscription);
+  const totalAbonnements = subVisits.reduce((s,v)=>s+(v.montant||0),0);
+  const subByClient = new Map();
+  subVisits.forEach(v=>{ const arr = subByClient.get(v.clientId)||[]; arr.push(v); subByClient.set(v.clientId, arr); });
+  const abonnementRows = [...subByClient.entries()].map(([cid,vs])=>{
+    const cl = clients.get(cid);
+    const unpaidMonths = vs.filter(v=>!v.paid).length;
+    return {
+      name: cl ? fmtNom(cl.name) : 'Client supprimé',
+      firstName: fmtPrenom(cl?.firstName),
+      address: cl?.address || '',
+      meta: `${vs.length} mois × ${fmtEUR(vs[0]?.montant||0)}${unpaidMonths?` · ${unpaidMonths} impayé${unpaidMonths>1?'s':''}`:''}`,
+      amount: vs.reduce((s,v)=>s+(v.montant||0),0)
+    };
+  }).sort((a,b)=>b.amount-a.amount);
 
   const revByClient = new Map();
   visits.forEach(v=>revByClient.set(v.clientId, (revByClient.get(v.clientId)||0) + (v.montant||0)));
-  abonnementRows.forEach(r=>revByClient.set(r.id, (revByClient.get(r.id)||0) + r.total));
-  const revRows = [...revByClient.entries()]
-    .map(([cid,total])=>({name: clients.get(cid)?.name || 'Client supprimé', total, sub: clients.get(cid)?.tariffType==='mensuel'}))
-    .sort((a,b)=>b.total-a.total);
+  const classiqueRows = [...revByClient.entries()]
+    .filter(([cid])=>clients.get(cid)?.tariffType!=='mensuel')
+    .map(([cid,total])=>{
+      const cl = clients.get(cid);
+      return {name: cl ? fmtNom(cl.name) : 'Client supprimé', firstName: fmtPrenom(cl?.firstName), address: cl?.address || '', amount: total};
+    })
+    .sort((a,b)=>b.amount-a.amount);
 
-  const unpaidHtml = unpaidVisits.length ? unpaidVisits.map(v=>{
+  const encaisserRows = unpaidVisits.map(v=>{
     const c = clients.get(v.clientId);
-    return `<div class="unpaidRow">
-      <div class="uInfo">
-        <div class="uName">${esc(c?.name||'Client supprimé')}</div>
-        <div class="uMeta">${fmtDate(v.date)}${v.travaux?' · '+esc(v.travaux):''}</div>
-      </div>
-      <div class="uAmount">${fmtEUR(v.montant)}</div>
-      <button class="payToggle unpaid acctPayBtn" data-vid="${v.id}" type="button">Marquer payé</button>
-    </div>`;
-  }).join('') : `<div class="muted" style="font-size:.85rem;padding:6px 0;">Aucun impayé sur cette période 🎉</div>`;
+    return {
+      name: c ? fmtNom(c.name) : 'Client supprimé',
+      firstName: fmtPrenom(c?.firstName),
+      address: c?.address || '',
+      meta: v.isSubscription ? 'Abonnement · '+fmtMonthLabel(v.subMonth) : fmtDate(v.date)+(v.travaux?' · '+esc(v.travaux):''),
+      amount: v.montant,
+      vid: v.id
+    };
+  });
 
-  const subHtml = abonnementRows.length ? abonnementRows.map(r=>`
-    <div class="revRow"><span>${esc(r.name)} <span class="miniTag">${r.months} mois × ${fmtEUR(r.unit)}</span></span><span class="revAmount">${fmtEUR(r.total)}</span></div>
-  `).join('') : `<div class="muted" style="font-size:.85rem;padding:6px 0;">Aucun client en forfait mensuel sur cette période.</div>`;
+  function acctTableHtml(rows, emptyText){
+    if(!rows.length) return `<div class="muted" style="font-size:.85rem;padding:6px 0;">${emptyText}</div>`;
+    return `<div class="tableWrap"><table class="acctTable">
+      <thead><tr><th>Nom</th><th>Prénom</th><th>Adresse</th><th class="acctAmountH">Montant</th></tr></thead>
+      <tbody>
+        ${rows.map(r=>`<tr>
+          <td>${esc(r.name)}${r.meta?`<div class="muted" style="font-size:.72rem;margin-top:2px;">${esc(r.meta)}</div>`:''}</td>
+          <td>${esc(r.firstName)||'—'}</td>
+          <td>${esc(r.address)||'—'}</td>
+          <td class="acctAmount">${fmtEUR(r.amount)}${r.vid?`<div style="margin-top:5px;"><button class="payToggle unpaid acctPayBtn" data-vid="${r.vid}" type="button">Marquer payé</button></div>`:''}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table></div>`;
+  }
 
-  const revHtml = revRows.length ? revRows.map(r=>`
-    <div class="revRow"><span>${esc(r.name)}${r.sub?' <span class="miniTag">Abonnement</span>':''}</span><span class="revAmount">${fmtEUR(r.total)}</span></div>
-  `).join('') : `<div class="muted" style="font-size:.85rem;padding:6px 0;">Aucune facturation sur cette période.</div>`;
+  const tabDefs = [
+    {key:'abonnements', label:'Abonnements', rows:abonnementRows, empty:'Aucun client en forfait mensuel sur cette période.'},
+    {key:'classiques', label:'Clients classiques', rows:classiqueRows, empty:'Aucun client classique facturé sur cette période.'},
+    {key:'encaisser', label:'À encaisser', rows:encaisserRows, empty:'Aucun impayé sur cette période 🎉'},
+  ];
+  if(!tabDefs.some(t=>t.key===acctTab)) acctTab = 'abonnements';
+  const activeTab = tabDefs.find(t=>t.key===acctTab);
 
   $('#acctBody').innerHTML = `
     <div class="statGrid">
-      <div class="statTile"><div class="statLabel">Total facturé</div><div class="statValue">${fmtEUR(totalGeneral)}</div></div>
+      <div class="statTile"><div class="statLabel">Total facturé</div><div class="statValue">${fmtEUR(totalFacture)}</div></div>
       <div class="statTile"><div class="statLabel">Abonnements mensuels</div><div class="statValue">${fmtEUR(totalAbonnements)}</div></div>
-      <div class="statTile ok"><div class="statLabel">Encaissé</div><div class="statValue">${fmtEUR(totalEncaisseGeneral)}</div></div>
+      <div class="statTile ok"><div class="statLabel">Encaissé</div><div class="statValue">${fmtEUR(totalEncaisse)}</div></div>
       <div class="statTile alert"><div class="statLabel">Impayé</div><div class="statValue">${fmtEUR(totalImpaye)}</div></div>
-      <div class="statTile"><div class="statLabel">Interventions</div><div class="statValue">${visits.length}</div></div>
+      <div class="statTile"><div class="statLabel">Interventions</div><div class="statValue">${visits.filter(v=>!v.isSubscription).length}</div></div>
       <div class="statTile"><div class="statLabel">Clients abonnés</div><div class="statValue">${abonnementRows.length}</div></div>
     </div>
-    <div class="section">
-      <div class="sectionTitle">Abonnements mensuels</div>
-      ${subHtml}
+    <div class="acctTabs">
+      ${tabDefs.map(t=>`<button class="acctChip ${acctTab===t.key?'active':''}" data-t="${t.key}" type="button">${t.label}${t.key==='encaisser'&&encaisserRows.length?` (${encaisserRows.length})`:''}</button>`).join('')}
     </div>
     <div class="section">
-      <div class="sectionTitle">À encaisser (hors abonnements)</div>
-      ${unpaidHtml}
-    </div>
-    <div class="section">
-      <div class="sectionTitle">Par client</div>
-      ${revHtml}
+      ${acctTableHtml(activeTab.rows, activeTab.empty)}
     </div>
     <div class="btnRow" style="margin-top:6px;">
       <button class="btnGhost" id="acctExportBtn" type="button">${icon('download')} Exporter en CSV</button>
     </div>`;
+  $$('.acctTabs .acctChip', $('#acctBody')).forEach(b=>b.addEventListener('click', ()=>{ acctTab=b.dataset.t; renderCompta(); }));
   $$('.acctPayBtn', $('#acctBody')).forEach(b=>b.addEventListener('click', async ()=>{
     await LocalDB.updateVisit(b.dataset.vid, {paid:true});
     toast('Marqué comme payé.');
     if(openClientId) await reloadVisitsAndPhotos(openClientId);
     renderCompta();
   }));
-  $('#acctExportBtn').addEventListener('click', ()=>exportAccountingCSV([...visits, ...abonnementPseudoVisits]));
+  $('#acctExportBtn').addEventListener('click', ()=>exportAccountingCSV(visits));
 }
 function csvEscape(v){
   const s = String(v??'');
@@ -1508,7 +1578,7 @@ function exportAccountingCSV(visits){
   const rows = [['Date','Client','Montant (EUR)','Payé','Travaux']];
   [...visits].sort((a,b)=>(a.date||'').localeCompare(b.date||'')).forEach(v=>{
     const c = clients.get(v.clientId);
-    rows.push([v.date||'', c?.name||'Client supprimé', v.montant!=null?String(v.montant).replace('.',','):'', v.paid?'Oui':'Non', v.travaux||'']);
+    rows.push([v.date||'', c?fmtFullName(c):'Client supprimé', v.montant!=null?String(v.montant).replace('.',','):'', v.paid?'Oui':'Non', v.travaux||'']);
   });
   const csv = rows.map(r=>r.map(csvEscape).join(';')).join('\r\n');
   const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8;'});
@@ -1683,7 +1753,7 @@ function renderSheetContent(){
     : `<div class="lastVisitBanner">Aucun passage enregistré pour l'instant.</div>`;
   const nvTimeRange = c.nextVisitTime ? ` à ${c.nextVisitTime}${c.nextVisitEndTime?'–'+c.nextVisitEndTime:''}` : '';
   const nextLine = c.nextVisitAt
-    ? `<div class="lastVisitBanner${isRdvSoon(c)?' soonText':''}">${icon('pin')} Prochain rendez-vous : <strong>${fmtDate(c.nextVisitAt)}${nvTimeRange}</strong> (${relDays(c.nextVisitAt)})${c.nextVisitType?' · '+esc(c.nextVisitType):''}</div>` : '';
+    ? `<div class="lastVisitBanner${isRdvSoon(c)?' soonText':''}">${icon('pin')} Prochain rendez-vous : <strong>${fmtDate(c.nextVisitAt)}${nvTimeRange}</strong> (${relDays(c.nextVisitAt)})${c.nextVisitType?' · '+esc(c.nextVisitType):''}${c.nextVisitNote?`<div class="muted" style="margin-top:3px;font-size:.82rem;">${esc(c.nextVisitNote)}</div>`:''}</div>` : '';
 
   const visitsHtml = currentVisits.map(v=>`
     <div class="visitItem">
@@ -1696,7 +1766,7 @@ function renderSheetContent(){
 
   const html = `
     <div class="sheetHead">
-      <h2>${esc(c.name)}</h2>
+      <h2>${esc(fmtFullName(c))}</h2>
       <div class="headBtns">
         <button class="iconBtn" id="editClientBtn" aria-label="Modifier">${icon('edit')}</button>
         <button class="iconBtn" id="deleteClientBtn" aria-label="Supprimer">${icon('trash')}</button>
@@ -1792,7 +1862,7 @@ function deleteClient(c){
   const box = document.createElement('div'); box.className='backdrop'; box.style.zIndex=1050;
   box.innerHTML = `<div class="sheet" style="max-width:360px;border-radius:var(--r-l);margin:20px;">
     <div class="sheetBody">
-      <h3 style="margin-bottom:8px;">Supprimer ${esc(c.name)} ?</h3>
+      <h3 style="margin-bottom:8px;">Supprimer ${esc(fmtFullName(c))} ?</h3>
       <p style="color:var(--ink-dim);font-size:.88rem;">Son historique de passages et ses photos seront aussi supprimés.</p>
       <div class="btnRow"><button class="btnDanger" id="confirmDel">Supprimer</button><button class="btnGhost" id="cancelDel">Annuler</button></div>
     </div></div>`;
@@ -1827,9 +1897,12 @@ function openClientForm(existing){
       <div class="headBtns"><button class="iconBtn" id="closeFormBtn">${icon('close')}</button></div></div>
     <div class="sheetBody">
       <form class="formGrid" id="clientForm">
-        <div class="field"><label for="f_name">Nom</label><input id="f_name" required value="${esc(c.name||'')}" placeholder="ex. Famille Dupont"></div>
+        <div class="field"><label for="f_name">Nom</label><input id="f_name" required value="${esc(c.name||'')}" placeholder="ex. Dupont ou Famille Dupont"></div>
         <div class="fieldRow">
+          <div class="field"><label for="f_firstname">Prénom</label><input id="f_firstname" value="${esc(c.firstName||'')}" placeholder="ex. Marie"></div>
           <div class="field"><label for="f_phone">Téléphone</label><input id="f_phone" type="tel" value="${esc(c.phone||'')}" placeholder="06 12 34 56 78"></div>
+        </div>
+        <div class="fieldRow">
           <div class="field"><label for="f_email">Email</label><input id="f_email" type="email" value="${esc(c.email||'')}" placeholder="nom@exemple.fr"></div>
         </div>
         <div class="addressRow">
@@ -1862,6 +1935,7 @@ function openClientForm(existing){
             <input id="f_nextvisittype" list="intervention_suggestions" value="${esc(c.nextVisitType||'')}" placeholder="ex. Tonte">
           </div>
         </div>
+        <div class="field"><label for="f_nextvisitnote">Commentaire sur le rendez-vous</label><textarea id="f_nextvisitnote" placeholder="ex. Prévoir l'échelle, portail code 1234…">${esc(c.nextVisitNote||'')}</textarea></div>
         <datalist id="intervention_suggestions">
           <option value="Tonte"><option value="Taille de haie"><option value="Désherbage">
           <option value="Débroussaillage"><option value="Élagage"><option value="Plantation">
@@ -1921,6 +1995,7 @@ function openClientForm(existing){
     if(nvStart && nvEnd && nvEnd<=nvStart){ toast("L'heure de fin doit être après l'heure de début."); return; }
     const data = {
       name,
+      firstName: $('#f_firstname').value.trim(),
       phone: $('#f_phone').value.trim(),
       email: $('#f_email').value.trim(),
       address: $('#f_address').value.trim(),
@@ -1933,6 +2008,7 @@ function openClientForm(existing){
       nextVisitTime: $('#f_nextvisittime').value || null,
       nextVisitEndTime: $('#f_nextvisitend').value || null,
       nextVisitType: $('#f_nextvisittype').value.trim() || null,
+      nextVisitNote: $('#f_nextvisitnote').value.trim() || null,
     };
     try{
       if(existing){
